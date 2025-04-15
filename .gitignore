@@ -52,5 +52,8 @@ Mkfile.old
 dkms.conf
 
 # Built files
-./bin
-./obj
+bin
+obj
+
+# Clangd configuration
+.clangd
