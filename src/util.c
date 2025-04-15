@@ -2,7 +2,7 @@
  * @file util.cpp
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
  * @brief Implements utility functions
- * @version 0.1
+ * @version 0.2
  * @date 2025-04-13
  * 
  * @copyright Copyright (c) 2025 Luke Houston
@@ -24,11 +24,6 @@
  */
 
 #include "util.h"
-
-#include "abm.h"
-#include "euler.h"
-#include "improved_euler.h"
-#include "rk4.h"
 
 #include <ti/getcsc.h>
 #include <ti/screen.h>
@@ -56,10 +51,10 @@ void startupScreen(void)
     while (!os_GetCSC()) {}
 }
 
-void methodMenu(void)
+enum Methods methodMenu(void)
 {
-    const int methods_count = 6;
-    const char* methods[methods_count] =
+    #define METHODS_COUNT 6
+    const char* methods[METHODS_COUNT] =
     {
         "Euler",
         "Improved Euler",
@@ -69,45 +64,48 @@ void methodMenu(void)
         "Quit"
     };
 
-    int choice = drawMenu("Main Menu", methods, methods_count);
+    int choice = drawMenu("Main Menu", methods, METHODS_COUNT);
 
+    enum Methods selectedMethod;
     // Yes yes magic numbers bad, but lightweight
     switch (choice)
     {
         case 0:
-            euler();
-            return;
+            selectedMethod = mEuler;
+            return selectedMethod;
         case 1:
-            impEuler();
-            return;
+            selectedMethod = mImpEuler;
+            return selectedMethod;
         case 2:
-            rk4();
-            return;
+            selectedMethod = mRK4;
+            return selectedMethod;
         case 3:
-            abm();
-            return;
+            selectedMethod = mABM;
+            return selectedMethod;
         case 4:
-            const int more_menu_count = 3;
-            const char* more_menu[more_menu_count] =
+        {
+            #define MORE_MENU_COUNT 3
+            const char* more_menu[MORE_MENU_COUNT] =
             {
                 "Custom RK",
                 "Back",
                 "Quit"
             };
 
-            int more_choice = drawMenu("Main Menu", more_menu, more_menu_count);
+            int more_choice = drawMenu("Main Menu", more_menu, MORE_MENU_COUNT);
 
             switch (more_choice)
             {
                 case 0:
-                    customRK();
-                    return;
+                    selectedMethod = mCustomRK;
+                    return selectedMethod;
                 case 1:
-                    methodMenu();
-                    return;
+                    return methodMenu();
                 default:
-                    return;
+                    selectedMethod = mQuit;
+                    return selectedMethod;
             }
+        }
     }
 }
 

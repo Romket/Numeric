@@ -25,15 +25,27 @@
 
 #pragma once
 
+#include "improved_euler.h"
+#include "rk4.h"
 #include "ti/getcsc.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+enum Methods
+{
+    mEuler,
+    mImpEuler,
+    mRK4,
+    mABM,
+    mCustomRK,
+    mQuit
+};
+
 void startupScreen(void);
 
-void methodMenu(void);
+enum Methods methodMenu(void);
 
 int drawMenu(const char* title, const char** options, int count);
 
