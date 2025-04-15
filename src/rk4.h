@@ -1,9 +1,9 @@
 /**
- * @file main.c
+ * @file improved_euler.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Entry point for Numeric
+ * @brief Declares functions for implementing Runge-Kutta methods
  * @version 0.1
- * @date 2025-04-13
+ * @date 2025-04-14
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -23,11 +23,17 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "util.h"
+#pragma once
 
-int main(void)
+#ifdef __cplusplus
+extern "C"
 {
-    startupScreen();
-    methodMenu();
-    return 0;
+#endif
+
+void rk4();
+
+void customRK();
+
+#ifdef __cplusplus
 }
+#endif

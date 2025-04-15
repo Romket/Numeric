@@ -1,8 +1,8 @@
 /**
- * @file main.c
+ * @file util.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Entry point for Numeric
- * @version 0.1
+ * @brief Miscellaneous utility functions
+ * @version 0.2
  * @date 2025-04-13
  * 
  * @copyright Copyright (c) 2025 Luke Houston
@@ -23,11 +23,23 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "util.h"
+#pragma once
 
-int main(void)
+#include "ti/getcsc.h"
+#ifdef __cplusplus
+extern "C"
 {
-    startupScreen();
-    methodMenu();
-    return 0;
+#endif
+
+void startupScreen(void);
+
+void methodMenu(void);
+
+int drawMenu(const char* title, const char** options, int count);
+
+// returns a value 0-9 or -1 if given key is not a number
+int getKeyNumber(sk_key_t key);
+
+#ifdef __cplusplus
 }
+#endif

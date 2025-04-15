@@ -1,7 +1,7 @@
 /**
- * @file main.c
+ * @file improved_euler.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Entry point for Numeric
+ * @brief Declares functions for implementing the improved Euler's method
  * @version 0.1
  * @date 2025-04-13
  * 
@@ -23,11 +23,15 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "util.h"
+#pragma once
 
-int main(void)
+#ifdef __cplusplus
+extern "C"
 {
-    startupScreen();
-    methodMenu();
-    return 0;
+#endif
+
+void impEuler();
+
+#ifdef __cplusplus
 }
+#endif
