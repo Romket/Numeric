@@ -57,3 +57,6 @@ obj
 
 # Clangd configuration
 .clangd
+
+# Vscode files
+.vscode
