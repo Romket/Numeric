@@ -16,6 +16,8 @@ MAKE_GFX = cd $(GFXDIR) && $(CONVIMG)
 
 HAS_PRINTF = NO
 
+CFLAGS += -Iinclude
+
 # ----------------------------
 
 include $(shell cedev-config --makefile)

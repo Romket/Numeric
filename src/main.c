@@ -23,7 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "util.h"
+#include <util.h>
 
 int main(void)
 {

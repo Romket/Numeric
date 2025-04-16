@@ -23,7 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "key.h"
+#include <io/key.h>
 
 #include <ti/getcsc.h>
 

@@ -23,7 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "geteq.h"
+#include <geteq.h>
 
 #include <ti/screen.h>
 

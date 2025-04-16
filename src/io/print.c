@@ -23,7 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "print.h"
+#include <io/print.h>
 
 #include <ti/screen.h>
 

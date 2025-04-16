@@ -23,9 +23,9 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "read.h"
+#include <io/read.h>
 
-#include "key.h" // for getKeyNumber
+#include <io/key.h> // for getKeyNumber
 #include <ti/screen.h>
 
 int readInt()

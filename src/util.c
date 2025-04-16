@@ -23,9 +23,9 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "util.h"
+#include <util.h>
 
-#include "key.h"
+#include <io/key.h>
 
 #include <ti/getcsc.h>
 #include <ti/screen.h>
