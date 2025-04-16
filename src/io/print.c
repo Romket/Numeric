@@ -78,7 +78,22 @@ void printStrLen(char* str, int len)
 // TODO: print characters without calling printStrLen
 void printChar(char val)
 {
+    // char buf[2] = {0};
+    // buf[0] = val;
+    // printStrLen(buf, 2);
+
+    if (val == '\n')
+    {
+        os_NewLine();
+        return;
+    }
+
+    unsigned int x, y;
+    os_GetCursorPos(&y, &x);
+
+    if (x == SCREEN_WIDTH_CHARS) os_NewLine();
+
     char buf[2] = {0};
     buf[0] = val;
-    printStrLen(buf, 2);
+    os_PutStrLine(buf);
 }
