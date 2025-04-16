@@ -26,6 +26,7 @@
 #include <util.h>
 
 #include <io/key.h>
+#include <io/print.h>
 
 #include <ti/getcsc.h>
 #include <ti/screen.h>
@@ -35,20 +36,16 @@ void startupScreen(void)
 {
     os_ClrHome();
 
-    os_PutStrFull("------ NUMERIC v0.1 ------");
-    os_PutStrFull("    Copyright (c) 2025");
-    os_NewLine();
-    os_PutStrFull("       Luke Houston");
-    os_NewLine();
-    os_NewLine();
-    os_PutStrFull("The ultimate numerical");
-    os_NewLine();
-    os_PutStrFull("differential equation");
-    os_NewLine();
-    os_PutStrFull("solver for the TI-84+ CE");
-    os_NewLine();
-    os_NewLine();
-    os_PutStrFull("Press any key to continue");
+    printStr("------ NUMERIC v0.1 ------\n");
+    printStr("    Copyright (c) 2025    \n");
+    printStr("       Luke Houston       \n\n");
+
+    printStr("The ultimate numerical\n");
+    printStr("differential equation\n");
+    printStr("solver for the TI-84+ CE\n\n");
+
+    printStr("Press any key to continue\n");
+    printStr("--------------------------");
 
     while (!os_GetCSC()) {}
 }

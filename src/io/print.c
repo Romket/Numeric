@@ -25,23 +25,46 @@
 
 #include <io/print.h>
 
+#include <io/iodefs.h>
+
 #include <ti/screen.h>
 
-void printStr(char* str, int len)
+void printStr(char* str)
+{
+    int i = 0;
+    while (str[i] != '\0' && i < MAX_STRING_LEN) ++i;
+
+    printStrLen(str, i + 1);
+}
+
+void printStrLen(char* str, int len)
 {
     char buf[len];
-    buf[len] = 0;
+    buf[0] = '\0';
 
-    for (int i = 0; i < len - 1; ++i)
+    for (int i = 0, bufIndex = 0; i < len - 1; ++i, ++bufIndex)
     {
+        // Ensure null termination by setting next element to '\0'
+        buf[bufIndex + 1] = '\0';
+
         if (str[i] == '\n')
         {
-            os_PutStrFull(buf);
+            os_PutStrLine(buf);
             os_NewLine();
-            for (int j = 0; j < i; ++j) buf[j] = 0;
+            
+            bufIndex = -1; // will be 0 next loop iteration
+            buf[0] = '\0';
         }
-        else buf[i] = str[i];
+        else buf[bufIndex] = str[i];
+
+        if (bufIndex == SCREEN_WIDTH_CHARS)
+        {
+            os_PutStrLine(buf);
+            os_NewLine();
+            for (int j = 0; j < i; ++j) buf[j] = '\0';
+            bufIndex = 0;
+        }
     }
 
-    os_PutStrFull(buf);
+    os_PutStrLine(buf);
 }

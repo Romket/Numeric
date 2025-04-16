@@ -1,7 +1,7 @@
 /**
- * @file print.h
+ * @file iodefs.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Defines functions for printing
+ * @brief Basic definitions for a string
  * @version 0.1
  * @date 2025-04-15
  * 
@@ -30,11 +30,9 @@ extern "C"
 {
 #endif
 
-void printStr(char* str);
-void printStrLen(char* str, int len);
-void printChar(char val);
-void printInt(int val);
-void printDouble(double val);
+#define MAX_STRING_LEN 1024
+
+#define SCREEN_WIDTH_CHARS 26
 
 #ifdef __cplusplus
 }
