@@ -26,8 +26,9 @@
 #include <io/key.h>
 
 #include <ti/getcsc.h>
+#include <ti/getkey.h>
 
-int getKeyNumber(sk_key_t key)
+int getKeyNumberCSC(uint8_t key)
 {
     switch (key)
     {
@@ -45,7 +46,12 @@ int getKeyNumber(sk_key_t key)
     }
 }
 
-int getKeyChar(sk_key_t key, bool alpha)
+int getKeyNumberKey(uint16_t key)
+{
+    return (key >= k_0 && key <= k_9) ? key - k_0 : -1;
+}
+
+int getKeyCharCSC(sk_key_t key, bool alpha)
 {
     switch (key)
     {

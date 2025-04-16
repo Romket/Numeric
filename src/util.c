@@ -140,9 +140,9 @@ int drawMenu(const char* title, const char** options, int count)
         if (key == sk_Up) { selected = (selected - 1 + count) % count; }
         else if (key == sk_Down) { selected = (selected + 1) % count; }
         else if (key == sk_2nd || key == sk_Enter) { return selected; }
-        else if (getKeyNumber(key) != -1 && getKeyNumber(key) <= count)
+        else if (getKeyNumberCSC(key) != -1 && getKeyNumberCSC(key) <= count)
         {
-            return getKeyNumber(key) - 1;
+            return getKeyNumberCSC(key) - 1;
         }
     }
 }

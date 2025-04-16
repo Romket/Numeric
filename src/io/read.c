@@ -26,37 +26,38 @@
 #include <io/read.h>
 
 #include <io/key.h> // for getKeyNumber
+#include <io/print.h>
+#include <ti/getkey.h>
 #include <ti/screen.h>
 
 int readInt()
 {
     int value = 0;
-    char key;
+    uint16_t key;
     bool isNegative = false;
+
+    os_EnableCursor();
 
     int i = 0;
     while (true)
     {
-        while (!(key = os_GetCSC()));
+        while (!(key = os_GetKey()));
 
-        if (getKeyNumber(key) != -1)
+        int num = getKeyNumberKey(key);
+
+        if (num != -1)
         {
             value *= 10;
-            value += getKeyNumber(key);
-            char str[2] = {0};
-            str[0] = '0' + getKeyNumber(key);
-            os_PutStrFull(str);
+            value += num;
+            printInt(num);
         }
-        else if (key == sk_Chs && i == 0)
+        else if (key == k_Chs && i == 0)
         {
             isNegative = true;
-            char str[2] = {0};
-            str[0] = '-';
-            os_PutStrFull(str);
+            printChar('-');
         }
 
-        
-        if (key == sk_Enter)
+        if (key == k_Enter)
         {
             return value * (isNegative ? -1 : 1);
         }
@@ -69,20 +70,28 @@ double readDouble()
 {
     double value = 0.0;
     bool isDecimal = false;
-    char key;
+    double placeModifier = 1.0;
+    uint16_t key;
 
     while (true)
     {
-        while (!(key = os_GetCSC()));
+        while (!(key = os_GetKey()));
 
-        if (getKeyNumber(key) != -1)
+        int num = getKeyNumberKey(key);
+
+        if (num != -1)
         {
-            value *= 10;
-            value += getKeyNumber(key);
+            if (!isDecimal) value *= 10;
+            else placeModifier *= 0.1;
+            value += placeModifier * (double)num;
+
+            printInt(num);
         }
-        else if (key == sk_Enter)
+        else if (key == k_DecPnt)
         {
-            return value;
+            isDecimal = true;
+            printChar('.');
         }
+        else if (key == k_Enter) return value;
     }
 }

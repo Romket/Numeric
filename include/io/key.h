@@ -25,17 +25,19 @@
 
 #pragma once
 
-#include <ti/getcsc.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#include <stdint.h>
+#include <stdbool.h>
+    
 // Returns -1 if the key is not a number
-int getKeyNumber(sk_key_t key);
+int getKeyNumberCSC(uint8_t key);
+int getKeyNumberKey(uint16_t key);
 
-int getKeyChar(sk_key_t key, bool alpha);
+int getKeyCharCSC(uint8_t key, bool alpha);
 
 #ifdef __cplusplus
 }
