@@ -30,10 +30,15 @@ extern "C"
 {
 #endif
 
-void printStr(char* str);
-void printStrLen(char* str, int len);
+#include <io/iodefs.h>
+#include <stdbool.h>
 
-void printChar(char val);
+// 26 characters and a null terminator
+static char lineBuffer[SCREEN_WIDTH_CHARS + 1] = {0};
+static bool isLineEnd = false;
+void printStr(const char* str);
+
+void printChar(const char val);
 
 void printInt(int val);
 

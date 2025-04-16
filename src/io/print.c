@@ -25,63 +25,45 @@
 
 #include <io/print.h>
 
-#include <io/iodefs.h>
-
 #include <ti/screen.h>
 
-void printStr(char* str)
+void printStr(const char* str)
 {
-    int i = 0;
-    while (str[i] != '\0' && i < MAX_STRING_LEN) ++i;
-
-    printStrLen(str, i + 1);
-}
-
-void printStrLen(char* str, int len)
-{
-    char buf[len];
-    buf[0] = '\0';
+    int lineBufferIndex = 0;
 
     unsigned int x, y;
     os_GetCursorPos(&y, &x);
-
-    int bufIndex = 0;
-    for (int i = 0; i < len - 1; ++i, ++bufIndex)
+    
+    if (isLineEnd && x == SCREEN_WIDTH_CHARS - 1) ++x;
+    
+    for (int i = 0; i < MAX_STRING_LEN; ++i, ++lineBufferIndex)
     {
-        // Ensure null termination by setting next element to '\0'
-        buf[bufIndex + 1] = '\0';
-
-        if (str[i] == '\n')
+        // Ensure null termination by erasing any potentially existing data
+        lineBuffer[lineBufferIndex + 1] = 0;
+        if (str[i] == 0) break;
+        
+        if ((lineBufferIndex + x >= SCREEN_WIDTH_CHARS) || str[i] == '\n')
         {
-            os_PutStrLine(buf);
+            os_PutStrLine(lineBuffer);
             os_NewLine();
             
-            bufIndex = -1; // will be 0 next loop iteration
-            buf[0] = '\0';
-
+            lineBufferIndex = 0;
+            lineBuffer[0] = 0;
+            lineBuffer[1] = 0;
+            
             x = 0;
         }
-        else buf[bufIndex] = str[i];
-
-        if (bufIndex + x == SCREEN_WIDTH_CHARS + 1)
-        {
-            os_PutStrLine(buf);
-            os_NewLine();
-            bufIndex = -1;
-            x = 0;
-        }
+        
+        if (str[i] != '\n') lineBuffer[lineBufferIndex] = str[i];
     }
 
-    if (bufIndex != 0) os_PutStrLine(buf);
+    os_PutStrLine(lineBuffer);
+
+    if (lineBufferIndex == SCREEN_WIDTH_CHARS) isLineEnd = true;
 }
 
-// TODO: print characters without calling printStrLen
-void printChar(char val)
+void printChar(const char val)
 {
-    // char buf[2] = {0};
-    // buf[0] = val;
-    // printStrLen(buf, 2);
-
     if (val == '\n')
     {
         os_NewLine();

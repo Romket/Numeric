@@ -36,9 +36,9 @@ void startupScreen(void)
 {
     os_ClrHome();
 
-    printStr("------ NUMERIC v0.1 -------\n");
-    printStr("    Copyright (c) 2025    \n");
-    printStr("       Luke Houston       \n\n");
+    printStr("------ NUMERIC v0.1 ------"); printStr("test");
+    printStr("    Copyright (c) 2025\n");
+    printStr("       Luke Houston\n\n");
 
     printStr("The ultimate numerical\n");
     printStr("differential equation\n");
@@ -118,20 +118,20 @@ int drawMenu(const char* title, const char** options, int count)
         os_ClrHome();
         os_SetCursorPos(0, 0);
         printStr(title);
+        printChar('\n');
 
         for (int i = 0; i < count; ++i)
         {
-            os_SetCursorPos(i + 1, 0);
-
             if (i == selected) { printChar('>'); }
-            else { os_PutStrFull(' '); }
+            else { printChar(' '); }
 
-            char option_str[4] = {0};
-            option_str[0] = '1' + i;
-            option_str[1] = ':';
-            option_str[2] = ' ';
-            printStrLen(option_str, 4);
+            char optionStr[4] = {0};
+            optionStr[0] = '1' + i;
+            optionStr[1] = ':';
+            optionStr[2] = ' ';
+            printStr(optionStr);
             printStr(options[i]);
+            printChar('\n');
         }
 
         while (!(key = os_GetCSC()));

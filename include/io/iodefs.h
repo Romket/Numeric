@@ -30,7 +30,7 @@ extern "C"
 {
 #endif
 
-#define MAX_STRING_LEN 1024
+#define MAX_STRING_LEN 256
 
 #define SCREEN_WIDTH_CHARS 26
 
