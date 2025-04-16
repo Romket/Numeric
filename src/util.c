@@ -58,7 +58,7 @@ enum Methods methodMenu(void)
         "Euler",
         "Improved Euler",
         "RK4",
-        "Adams-Bashforth-Moulton",
+        "AdamsBashforthMoulton",
         "More",
         "Quit"
     };
