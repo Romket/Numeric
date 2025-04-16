@@ -36,7 +36,7 @@ void startupScreen(void)
 {
     os_ClrHome();
 
-    printStr("------ NUMERIC v0.1 ------\n");
+    printStr("------ NUMERIC v0.1 -------\n");
     printStr("    Copyright (c) 2025    \n");
     printStr("       Luke Houston       \n\n");
 

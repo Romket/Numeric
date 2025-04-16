@@ -32,8 +32,11 @@ extern "C"
 
 void printStr(char* str);
 void printStrLen(char* str, int len);
+
 void printChar(char val);
+
 void printInt(int val);
+
 void printDouble(double val);
 
 #ifdef __cplusplus

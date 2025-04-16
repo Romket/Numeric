@@ -42,7 +42,11 @@ void printStrLen(char* str, int len)
     char buf[len];
     buf[0] = '\0';
 
-    for (int i = 0, bufIndex = 0; i < len - 1; ++i, ++bufIndex)
+    unsigned int x, y;
+    os_GetCursorPos(&y, &x);
+
+    int bufIndex = 0;
+    for (int i = 0; i < len - 1; ++i, ++bufIndex)
     {
         // Ensure null termination by setting next element to '\0'
         buf[bufIndex + 1] = '\0';
@@ -54,17 +58,27 @@ void printStrLen(char* str, int len)
             
             bufIndex = -1; // will be 0 next loop iteration
             buf[0] = '\0';
+
+            x = 0;
         }
         else buf[bufIndex] = str[i];
 
-        if (bufIndex == SCREEN_WIDTH_CHARS)
+        if (bufIndex + x == SCREEN_WIDTH_CHARS + 1)
         {
             os_PutStrLine(buf);
             os_NewLine();
-            for (int j = 0; j < i; ++j) buf[j] = '\0';
-            bufIndex = 0;
+            bufIndex = -1;
+            x = 0;
         }
     }
 
-    os_PutStrLine(buf);
+    if (bufIndex != 0) os_PutStrLine(buf);
+}
+
+// TODO: print characters without calling printStrLen
+void printChar(char val)
+{
+    char buf[2] = {0};
+    buf[0] = val;
+    printStrLen(buf, 2);
 }
