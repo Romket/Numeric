@@ -1,9 +1,9 @@
 /**
- * @file improved_euler.h
+ * @file print.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Declares functions for implementing Runge-Kutta methods
+ * @brief Defines functions for printing
  * @version 0.1
- * @date 2025-04-14
+ * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -30,9 +30,10 @@ extern "C"
 {
 #endif
 
-void rk4();
-
-void customRK();
+void printStr(char* str, int len);
+void printChar(char val);
+void printInt(int val);
+void printDouble(double val);
 
 #ifdef __cplusplus
 }

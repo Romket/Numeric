@@ -25,9 +25,6 @@
 
 #pragma once
 
-#include "improved_euler.h"
-#include "rk4.h"
-#include "ti/getcsc.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -48,9 +45,6 @@ void startupScreen(void);
 enum Methods methodMenu(void);
 
 int drawMenu(const char* title, const char** options, int count);
-
-// returns a value 0-9 or -1 if given key is not a number
-int getKeyNumber(sk_key_t key);
 
 #ifdef __cplusplus
 }

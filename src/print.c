@@ -1,9 +1,9 @@
 /**
- * @file improved_euler.h
+ * @file print.c
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Declares functions for implementing Runge-Kutta methods
+ * @brief Implements functions for printing
  * @version 0.1
- * @date 2025-04-14
+ * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -23,17 +23,25 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "print.h"
 
-#ifdef __cplusplus
-extern "C"
+#include <ti/screen.h>
+
+void printStr(char* str, int len)
 {
-#endif
+    char buf[len];
+    buf[len] = 0;
 
-void rk4();
+    for (int i = 0; i < len - 1; ++i)
+    {
+        if (str[i] == '\n')
+        {
+            os_PutStrFull(buf);
+            os_NewLine();
+            for (int j = 0; j < i; ++j) buf[j] = 0;
+        }
+        else buf[i] = str[i];
+    }
 
-void customRK();
-
-#ifdef __cplusplus
+    os_PutStrFull(buf);
 }
-#endif

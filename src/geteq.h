@@ -1,9 +1,9 @@
 /**
- * @file improved_euler.h
+ * @file geteq.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Declares functions for implementing Runge-Kutta methods
+ * @brief Declares functions to get the equations to solve from the user
  * @version 0.1
- * @date 2025-04-14
+ * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -30,9 +30,14 @@ extern "C"
 {
 #endif
 
-void rk4();
+struct Equation
+{
+    int order;
+    int systemSize;
+    char** equations;
+};
 
-void customRK();
+struct Equation getEquation(void);
 
 #ifdef __cplusplus
 }

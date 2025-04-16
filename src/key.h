@@ -1,9 +1,9 @@
 /**
- * @file improved_euler.h
+ * @file key.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Declares functions for implementing Runge-Kutta methods
+ * @brief Declares functions to convert a keycode to a usable value
  * @version 0.1
- * @date 2025-04-14
+ * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -25,14 +25,17 @@
 
 #pragma once
 
+#include <ti/getcsc.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-void rk4();
+// Returns -1 if the key is not a number
+int getKeyNumber(sk_key_t key);
 
-void customRK();
+int getKeyChar(sk_key_t key, bool alpha);
 
 #ifdef __cplusplus
 }

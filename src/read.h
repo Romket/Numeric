@@ -1,9 +1,9 @@
 /**
- * @file improved_euler.h
+ * @file read.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Declares functions for implementing Runge-Kutta methods
+ * @brief Declares functions for reading input
  * @version 0.1
- * @date 2025-04-14
+ * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -30,9 +30,9 @@ extern "C"
 {
 #endif
 
-void rk4();
-
-void customRK();
+int readInt(void);
+double readDouble(void);
+char* readString(void);
 
 #ifdef __cplusplus
 }
