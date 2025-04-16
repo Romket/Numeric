@@ -2,7 +2,7 @@
  * @file print.c
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
  * @brief Implements functions for printing
- * @version 0.1
+ * @version 0.3
  * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston

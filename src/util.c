@@ -2,7 +2,7 @@
  * @file util.cpp
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
  * @brief Implements utility functions
- * @version 0.2
+ * @version 0.3
  * @date 2025-04-13
  * 
  * @copyright Copyright (c) 2025 Luke Houston
@@ -36,7 +36,7 @@ void startupScreen(void)
 {
     os_ClrHome();
 
-    printStr("------ NUMERIC v0.1 ------"); printStr("test");
+    printStr("------ NUMERIC v0.1 ------\n");
     printStr("    Copyright (c) 2025\n");
     printStr("       Luke Houston\n\n");
 
