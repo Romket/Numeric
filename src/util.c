@@ -117,21 +117,21 @@ int drawMenu(const char* title, const char** options, int count)
     {
         os_ClrHome();
         os_SetCursorPos(0, 0);
-        os_PutStrFull(title);
+        printStr(title);
 
         for (int i = 0; i < count; ++i)
         {
             os_SetCursorPos(i + 1, 0);
 
-            if (i == selected) { os_PutStrFull(">"); }
-            else { os_PutStrFull(" "); }
+            if (i == selected) { printChar('>'); }
+            else { os_PutStrFull(' '); }
 
             char option_str[4] = {0};
             option_str[0] = '1' + i;
             option_str[1] = ':';
             option_str[2] = ' ';
-            os_PutStrFull(option_str);
-            os_PutStrFull(options[i]);
+            printStrLen(option_str, 4);
+            printStr(options[i]);
         }
 
         while (!(key = os_GetCSC()));
