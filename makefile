@@ -1,22 +1,50 @@
+# ====================== Project Settings ======================
+
 NAME = NUMERIC
 ICON = icon.png
 DESCRIPTION = "All the numeric methods you'll ever need!"
 
-COMPRESSED = YES
-COMPRESSED_MODE = zx0
+SRC = src
+BUILD = build
+BIN = $(BUILD)/bin
+OBJ = $(BUILD)/obj
 
-ARCHIVED = YES
+SOURCES = $(wildcard $(SRC)/*.txt)
 
-CFLAGS = -Wall -Wextra -Oz
-CXXFLAGS = -Wall -Wextra -Oz
+COMBINED = $(OBJ)/combined.txt
+OUTPUT = $(BIN)/$(NAME).8xp
 
-# Default make gfx
-MAKE_GFX = cd $(GFXDIR) && $(CONVIMG)
+# ====================== Build Tasks ======================
 
-HAS_PRINTF = NO
+all: $(OUTPUT)
 
-CFLAGS += -Iinclude
+# Create directories
+$(OBJ):
+	@mkdir -p $(OBJ)
 
-# ----------------------------
+$(BIN):
+	@mkdir -p $(BIN)
 
-include $(shell cedev-config --makefile)
+# Combine all source files into one
+$(COMBINED): $(SOURCES) | $(OBJ)
+	@if [ -z "$(SOURCES)" ]; then \
+		echo "No source files found."; \
+		exit 1; \
+	fi
+	@echo "Combining source files..."
+	@cat $(SOURCES) > $(COMBINED)
+	@echo "Done."
+
+# Build with tibasic
+$(OUTPUT): $(COMBINED) | $(BIN)
+	@echo "Building..."
+	@tibasic -o $(OUTPUT) $(COMBINED)
+	@echo "Done."
+
+# Delete built files
+clean:
+	@echo "Cleaning built files..."
+	@rm -rf $(BUILD)
+	@echo "Done."
+
+.PHONY: all clean
