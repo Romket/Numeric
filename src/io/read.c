@@ -23,75 +23,36 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "stdbool.h"
 #include <io/read.h>
 
-#include <io/key.h> // for getKeyNumber
+#include <io/iodefs.h>
+#include <io/key.h>
 #include <io/print.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <ti/getkey.h>
 #include <ti/screen.h>
 
-int readInt()
+char* readString(int* length)
 {
-    int value = 0;
-    uint16_t key;
-    bool isNegative = false;
-
-    os_EnableCursor();
-
-    int i = 0;
-    while (true)
-    {
-        while (!(key = os_GetKey()));
-
-        int num = getKeyNumberKey(key);
-
-        if (num != -1)
-        {
-            value *= 10;
-            value += num;
-            printInt(num);
-        }
-        else if (key == k_Chs && i == 0)
-        {
-            isNegative = true;
-            printChar('-');
-        }
-
-        if (key == k_Enter)
-        {
-            return value * (isNegative ? -1 : 1);
-        }
-
-        ++i;
-    }
-}
-
-double readDouble()
-{
-    double value = 0.0;
-    bool isDecimal = false;
-    double placeModifier = 1.0;
+    char* string = malloc(MAX_STRING_LEN);
     uint16_t key;
 
-    while (true)
+    for (*length = 0; *length < MAX_STRING_LEN; ++*length)
     {
-        while (!(key = os_GetKey()));
+        key = os_GetKey();
+        if (key == k_Enter) break;
 
-        int num = getKeyNumberKey(key);
+        int c = getKeyCharKey(key); // int for -1 to 255 guaranteed
 
-        if (num != -1)
+        if (c != -1)
         {
-            if (!isDecimal) value *= 10;
-            else placeModifier *= 0.1;
-            value += placeModifier * (double)num;
-
-            printInt(num);
+            // Implicit cast to char
+            string[*length] = c;
+            printChar(c);
         }
-        else if (key == k_DecPnt)
-        {
-            isDecimal = true;
-            printChar('.');
-        }
-        else if (key == k_Enter) return value;
     }
+
+    return string;
 }

@@ -30,9 +30,7 @@ extern "C"
 {
 #endif
 
-int readInt(void);
-double readDouble(void);
-char* readString(void);
+char* readString(int* length);
 
 #ifdef __cplusplus
 }

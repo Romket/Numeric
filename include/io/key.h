@@ -38,6 +38,7 @@ int getKeyNumberCSC(uint8_t key);
 int getKeyNumberKey(uint16_t key);
 
 int getKeyCharCSC(uint8_t key, bool alpha);
+int getKeyStringKey(uint16_t key, char* str);
 
 #ifdef __cplusplus
 }
