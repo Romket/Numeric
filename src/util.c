@@ -105,6 +105,9 @@ enum Methods methodMenu(void)
                     return selectedMethod;
             }
         }
+        default:
+            selectedMethod = mQuit;
+            return selectedMethod;
     }
 }
 
