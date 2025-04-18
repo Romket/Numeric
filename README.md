@@ -10,6 +10,8 @@ software and follow instructions for each.
 
 ### Building manually
 
+Make sure you have [tibasic](https://github.com/miselin/tibasic) installed.
+
 To build the program manually, use the following commands:
 
 ```bash
@@ -18,8 +20,8 @@ $ cd Numeric
 $ make
 ```
 
-This will generate a `NUMERIC.8xp` file that can be loaded into TI-Connect CE 
-or TILP.
+This will generate a `NUMERIC.8xp` file in the `build/bin` directory that can
+be loaded into TI-Connect CE or TILP.
 
 ## Usage
 
@@ -31,7 +33,7 @@ The program will prompt you for the following:
 - The order of each equation
 - The initial conditions for each equation
 - The step height
-- The t value to evaluate the function at
+- The `t` value to evaluate the function at
 
 The program will then show a menu to select the method to use.
 
@@ -56,22 +58,22 @@ There are also some more advanced methods and can be found in the `More` menu:
 The program will output the solution to the console at the final value given.
 
 Some other values will be saved to lists and matrices.
-- Intermediate t values will be saved to list `L1`
-- Intermediate y values will be saved to matrix `[V]`
-- Intermediate y' values will be saved to matrix `[W]`
-- Intermediate y'' values will be saved to matrix `[X]`
-- Intermediate y''' values will be saved to matrix `[Y]`
-- Intermediate y'''' values will be saved to matrix `[Z]`
-- Unfortunately, any equation with of order greater than 4 won't save all the\
+- Intermediate `t` values will be saved to list `L1`
+- Intermediate `y` values will be saved to matrix `[V]`
+- Intermediate `y'` values will be saved to matrix `[W]`
+- Intermediate `y''` values will be saved to matrix `[X]`
+- Intermediate `y'''` values will be saved to matrix `[Y]`
+- Intermediate `y''''` values will be saved to matrix `[Z]`
+- Unfortunately, any equation with of order greater than 4 won't save all the
   intermediate values.
 
 For Runge-Kutta methods, the program will also save k-values:
-- Intermediate k1 values will be saved to matrix `[K]`
-- Intermediate k2 values will be saved to matrix `[L]`
-- Intermediate k3 values will be saved to matrix `[M]`
-- Intermediate k4 values will be saved to matrix `[N]`
-- Intermediate k5 values will be saved to matrix `[O]`
-- Any Runge-Kutta method with of order greater than 5 won't save all the\
+- Intermediate `k1` values will be saved to matrix `[K]`
+- Intermediate `k2` values will be saved to matrix `[L]`
+- Intermediate `k3` values will be saved to matrix `[M]`
+- Intermediate `k4` values will be saved to matrix `[N]`
+- Intermediate `k5` values will be saved to matrix `[O]`
+- Any Runge-Kutta method with of order greater than 5 won't save all the
   intermediate k-values.
 
 ## License
