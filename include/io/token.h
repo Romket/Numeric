@@ -30,6 +30,7 @@ extern "C"
 
 #define STR(x) ((const char[]){ x, 0 })
 
+// TODO: remove STR calls
 // 0x00 is empty
 // 0x01 - 0x04 can be printed without special codes
 #define SEL         STR(0x05)
