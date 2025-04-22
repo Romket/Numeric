@@ -27,7 +27,22 @@
 
 int main(void)
 {
-    startupScreen();
-    methodMenu();
-    return 0;
+    #include "ti/screen.h"
+    #include "io/token.h"
+    #include "ti/getcsc.h"
+    os_ClrHome();
+    for (int i = 0; i <= 0xFF; ++i)
+    {
+        os_PutStrFull(STR(i));
+        while (!os_GetCSC());
+    }
+
+    // #include <io/read.h>
+    // os_ClrHome();
+    // os_SetCursorPos(1, 1);
+    // uint16_t* test = readString();
+    // // startupScreen();
+    // // methodMenu();
+    // free(test);
+    // return 0;
 }

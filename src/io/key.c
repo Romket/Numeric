@@ -23,12 +23,14 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "io/iodefs.h"
 #include <io/key.h>
 
-#include <stdlib.h>
+#include <io/token.h>
+
 #include <ti/getcsc.h>
 #include <ti/getkey.h>
+
+#include <string.h>
 
 int getKeyNumberCSC(uint8_t key)
 {
@@ -66,13 +68,12 @@ int getKeyCharCSC(sk_key_t key, bool alpha)
         case sk_Mul: return alpha ? 'R' : '*';
         case sk_Div: return alpha ? 'M' : '/';
         case sk_Graph: return alpha ? 'Y' : '^';
+        default: return ' ';
     }
 }
 
 int getKeyStringKey(uint16_t key, char* str)
 {
-    str = malloc(MAX_STRING_LEN);
-
     if (key >= k_CapA && key <= k_CapZ)
     {
         str[0] = (key - k_CapA) + 'A';
@@ -86,42 +87,55 @@ int getKeyStringKey(uint16_t key, char* str)
 
     switch (key)
     {
-        case k_EE: str = "*10^"; return 4;
-        case k_Space: str = " "; return 1;
-        case k_Varx: str = "x"; return 1;
-        case k_Pi: str = "π"; return 1;
-        case k_Inv: str = "⁻¹"; return 2;
-        case k_Sin: str = "sin("; return 4;
-        case k_ASin: str = "asin("; return 5;
-        case k_Cos: str = "cos("; return 4;
-        case k_ACos: str = "acos("; return 5;
-        case k_Tan: str = "tan("; return 4;
-        case k_ATan: str = "atan("; return 5;
-        case k_Square: str = "^2"; return 2;
-        case k_Sqrt: str = "√("; return 2;
-        case k_Ln: str = "ln("; return 3;
-        case k_Exp: str = "e^"; return 2;
-        case k_Log: str = "log("; return 4;
-        case k_ALog: str = "10^"; return 3;
-        case k_Ans: str = "Ans"; return 3;
-        case k_Colon: str = ":"; return 1;
-        case k_NDeriv: str = "nDeriv("; return 7;
-        case k_FnInt: str = "fnInt("; return 6;
-        case k_Root: str = "root("; return 5;
-        case k_Quest: str = "?"; return 1;
-        case k_Quote: str = "\""; return 1;
-        case k_Theta: str = "θ"; return 1;
-        case k_SinH: str = "sinh("; return 5;
-        case k_CosH: str = "cosh("; return 5;
-        case k_TanH: str = "tanh("; return 5;
-        case k_ASinH: str = "asinh("; return 6;
-        case k_ACosH: str = "acosh("; return 6;
-        case k_ATanH: str = "atanh("; return 6;
-        case k_LBrace: str = "{"; return 1;
-        case k_RBrace: str = "}"; return 1;
-        case k_I: str = "i"; return 1;
+        case k_Add:    strcpy(str, "+");       return 1;
+        case k_Sub:    strcpy(str, "-");       return 1;
+        case k_Mul:    strcpy(str, "*");       return 1;
+        case k_Div:    strcpy(str, "/");       return 1;
+        case k_Expon:  strcpy(str, "^");       return 1;
+        case k_LParen: strcpy(str, "(");       return 1;
+        case k_RParen: strcpy(str, ")");       return 1;
+        case k_LBrack: strcpy(str, "[");       return 1;
+        case k_RBrack: strcpy(str, "]");       return 1;
+        case k_Comma:  strcpy(str, ",");       return 1;
+        case k_Chs:    strcpy(str, "-");       return 1;
+        case k_DecPnt: strcpy(str, ".");       return 1;
+        case k_EE:     strcpy(str, "ᴇ");       return 1;
+        case k_Space:  strcpy(str, " ");       return 1;
+        case k_Varx:   strcpy(str, "X");       return 1;
+        case k_Pi:     strcpy(str, pi);        return 1;
+        case k_Inv:    strcpy(str, "⁻¹");      return 2;
+        case k_Sin:    strcpy(str, "sin(");    return 4;
+        case k_ASin:   strcpy(str, "asin(");   return 5;
+        case k_Cos:    strcpy(str, "cos(");    return 4;
+        case k_ACos:   strcpy(str, "acos(");   return 5;
+        case k_Tan:    strcpy(str, "tan(");    return 4;
+        case k_ATan:   strcpy(str, "atan(");   return 5;
+        case k_Square: strcpy(str, "^2");      return 2;
+        case k_Sqrt:   strcpy(str, "√(");      return 2;
+        case k_Ln:     strcpy(str, "ln(");     return 3;
+        case k_Exp:    strcpy(str, "e^");      return 2;
+        case k_Log:    strcpy(str, "log(");    return 4;
+        case k_ALog:   strcpy(str, "10^");     return 3;
+        case k_Ans:    strcpy(str, "Ans");     return 3;
+        case k_Colon:  strcpy(str, ":");       return 1;
+        case k_NDeriv: strcpy(str, "nDeriv("); return 7;
+        case k_FnInt:  strcpy(str, "fnInt(");  return 6;
+        case k_Root:   strcpy(str, "root(");   return 5;
+        case k_Quest:  strcpy(str, "?");       return 1;
+        case k_Quote:  strcpy(str, "\"");      return 1;
+        case k_Theta:  strcpy(str, "θ");       return 1;
+        case k_SinH:   strcpy(str, "sinh(");   return 5;
+        case k_CosH:   strcpy(str, "cosh(");   return 5;
+        case k_TanH:   strcpy(str, "tanh(");   return 5;
+        case k_ASinH:  strcpy(str, "asinh(");  return 6;
+        case k_ACosH:  strcpy(str, "acosh(");  return 6;
+        case k_ATanH:  strcpy(str, "atanh(");  return 6;
+        case k_LBrace: strcpy(str, "{");       return 1;
+        case k_RBrace: strcpy(str, "}");       return 1;
+        case k_I:      strcpy(str, "i");       return 1;
         
-        case k_Abs: str = "abs("; return 4;
-        case 
+        case k_Abs: strcpy(str, "abs("); return 4;
+
+        default: str[0] = '\0'; return -1;
     }
 }

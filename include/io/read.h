@@ -30,7 +30,9 @@ extern "C"
 {
 #endif
 
-char* readString(int* length);
+#include <stdint.h>
+
+uint16_t* readString();
 
 #ifdef __cplusplus
 }

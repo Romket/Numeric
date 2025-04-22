@@ -23,12 +23,19 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "stdbool.h"
 #include <io/print.h>
 
 #include <ti/screen.h>
 
 void printStr(const char* str)
 {
+    if (cursorEnabled)
+    {
+        os_PutStrFull(str);
+        return;
+    }
+
     int lineBufferIndex = 0;
 
     unsigned int x, y;
@@ -73,9 +80,25 @@ void printChar(const char val)
     unsigned int x, y;
     os_GetCursorPos(&y, &x);
 
-    if (x == SCREEN_WIDTH_CHARS) os_NewLine();
+    if (x == SCREEN_WIDTH_CHARS - 1 && isLineEnd)
+    {
+        os_NewLine();
+        isLineEnd = false;
+        x = 0;
+    }
 
     char buf[2] = {0};
     buf[0] = val;
+
     os_PutStrLine(buf);
+
+    if (++x == SCREEN_WIDTH_CHARS) isLineEnd = true;
+}
+
+void setCursor(bool status)
+{
+    if (status) os_EnableCursor();
+    else os_DisableCursor();
+
+    cursorEnabled = status;
 }

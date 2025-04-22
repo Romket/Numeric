@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "stdbool.h"
 #include <io/read.h>
 
 #include <io/iodefs.h>
@@ -34,25 +33,56 @@
 #include <ti/getkey.h>
 #include <ti/screen.h>
 
-char* readString(int* length)
+#include <string.h>
+
+uint16_t* readString()
 {
-    char* string = malloc(MAX_STRING_LEN);
+    uint16_t* result = calloc(MAX_STRING_LEN, sizeof(uint16_t));
+    
     uint16_t key;
 
-    for (*length = 0; *length < MAX_STRING_LEN; ++*length)
+    setCursor(true);
+
+    unsigned int x, y;
+    os_GetCursorPos(&y, &x);
+
+    int length = 0;
+    for (int i = 0; i < MAX_STRING_LEN; ++i)
     {
         key = os_GetKey();
         if (key == k_Enter) break;
-
-        int c = getKeyCharKey(key); // int for -1 to 255 guaranteed
-
-        if (c != -1)
+        else if (key == k_Clear)
         {
-            // Implicit cast to char
-            string[*length] = c;
-            printChar(c);
+            unsigned int curX, curY;
+
+            // Clear newlines
+            os_GetCursorPos(&curY, &curX);
+            while (curY > y)
+            {
+                os_SetCursorPos(curY, 0);
+                printStr(CLEAR_LINE);
+                --curY;
+            }
+
+            // Clear original line
+            os_SetCursorPos(y, x);
+            for (curX = x; curX < SCREEN_WIDTH_CHARS; ++curX) printChar(' ');
+
+            // Reset cursor position
+            os_SetCursorPos(y, x);
+
+            // Reset result
+            memset(result, 0, MAX_STRING_LEN * sizeof(uint16_t));
+            i = 0;
+        }
+
+        char str[SCREEN_WIDTH_CHARS] = {0};
+        if ((length = getKeyStringKey(key, str)) != -1)
+        {
+            result[i] = key;
+            printStr(str);
         }
     }
 
-    return string;
+    return result;
 }
