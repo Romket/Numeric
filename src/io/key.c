@@ -94,7 +94,7 @@ int getKeyStringKey(uint16_t key, char* str)
         case k_Expon:  strcpy(str, "^");                     return 1;
         case k_LParen: strcpy(str, "(");                     return 1;
         case k_RParen: strcpy(str, ")");                     return 1;
-        case k_LBrack: strcpy(str, "[");                     return 1;
+        case k_LBrack: strcpy(str, STR(LBRACK));         return 1;
         case k_RBrack: strcpy(str, "]");                     return 1;
         case k_Comma:  strcpy(str, ",");                     return 1;
         case k_Chs:    strcpy(str, STR(CHS));            return 1;

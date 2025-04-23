@@ -142,7 +142,9 @@ extern "C"
 #define UDELTA              0xBE
 #define LDELTA              0xBF
 #define LEPSILON            0xC0
-// 0xC1 is [ for some reason
+
+#define LBRACK              0xC1
+
 #define LLAMBDA             0xC2
 #define LMU                 0xC3
 #define LPI                 0xC4

@@ -27,8 +27,8 @@
 
 int main(void)
 {
-    #include <io/read.h>
     #include <ti/screen.h>
+    #include <io/read.h>
     #include <stdlib.h>
     os_ClrHome();
     os_SetCursorPos(1, 1);
