@@ -27,23 +27,14 @@
 
 int main(void)
 {
-    #include "ti/screen.h"
-    #include "io/token.h"
-    #include "ti/getcsc.h"
+    #include <io/read.h>
+    #include <ti/screen.h>
+    #include <stdlib.h>
     os_ClrHome();
-    os_PutStrFull("'`");
-    for (int i = 0; i <= 0xFF; ++i)
-    {
-        os_PutStrFull(STR(i));
-        while (!os_GetCSC());
-    }
-
-    // #include <io/read.h>
-    // os_ClrHome();
-    // os_SetCursorPos(1, 1);
-    // uint16_t* test = readString();
-    // // startupScreen();
-    // // methodMenu();
-    // free(test);
-    // return 0;
+    os_SetCursorPos(1, 1);
+    uint16_t* test = readString();
+    // startupScreen();
+    // methodMenu();
+    free(test);
+    return 0;
 }
