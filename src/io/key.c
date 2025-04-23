@@ -25,7 +25,7 @@
 
 #include <io/key.h>
 
-#include <io/token.h>
+#include <io/symbols.h>
 
 #include <ti/getcsc.h>
 #include <ti/getkey.h>
@@ -102,7 +102,7 @@ int getKeyStringKey(uint16_t key, char* str)
         case k_EE:     strcpy(str, "ᴇ");       return 1;
         case k_Space:  strcpy(str, " ");       return 1;
         case k_Varx:   strcpy(str, "X");       return 1;
-        case k_Pi:     strcpy(str, pi);        return 1;
+        case k_Pi:     strcpy(str, STR(LPI));  return 1;
         case k_Inv:    strcpy(str, "⁻¹");      return 2;
         case k_Sin:    strcpy(str, "sin(");    return 4;
         case k_ASin:   strcpy(str, "asin(");   return 5;

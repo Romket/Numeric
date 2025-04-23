@@ -31,6 +31,7 @@ int main(void)
     #include "io/token.h"
     #include "ti/getcsc.h"
     os_ClrHome();
+    os_PutStrFull("'`");
     for (int i = 0; i <= 0xFF; ++i)
     {
         os_PutStrFull(STR(i));
