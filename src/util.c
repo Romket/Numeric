@@ -23,10 +23,12 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ti/getkey.h"
 #include <util.h>
 
 #include <io/key.h>
 #include <io/print.h>
+#include <io/symbols.h>
 
 #include <ti/getcsc.h>
 #include <ti/screen.h>
@@ -47,7 +49,7 @@ void startupScreen(void)
     printStr("Press any key to continue\n");
     printStr("--------------------------");
 
-    while (!os_GetCSC()) {}
+    while (!os_GetCSC());
 }
 
 enum Methods methodMenu(void)
@@ -125,7 +127,7 @@ int drawMenu(const char* title, const char** options, int count)
 
         for (int i = 0; i < count; ++i)
         {
-            if (i == selected) { printChar('>'); }
+            if (i == selected) { printChar(SEL); }
             else { printChar(' '); }
 
             char optionStr[4] = {0};
@@ -148,4 +150,32 @@ int drawMenu(const char* title, const char** options, int count)
             return getKeyNumberCSC(key) - 1;
         }
     }
+}
+
+bool strToNum(uint16_t* str, int len, double* result)
+{
+    *result = 0.0;
+    double place = 1.0;
+    bool negative = false;
+
+    if (str[0] == k_Chs) negative = true;
+
+    for (int i = 0 + negative; i < len; ++i)
+    {
+        if (place == 0 && str[i] != k_DecPnt)
+        {
+            *result *= 10;
+            *result += str[i] - k_0;
+        }
+        else if (str[i] == k_DecPnt && place != 1.0) return false;
+        else
+        {
+            if (str[i] != k_DecPnt) *result += (double)(str[i] - k_0) * place;
+            place /= 10.0;
+        }
+    }
+
+    *result *= negative ? -1.0 : 1.0;
+
+    return true;
 }

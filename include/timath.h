@@ -1,9 +1,9 @@
 /**
- * @file util.h
+ * @file timath.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Miscellaneous utility functions
- * @version 0.2
- * @date 2025-04-13
+ * @brief Functions to perform math operations on user-generated equations
+ * @version 0.1
+ * @date 2025-04-23
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -30,26 +30,26 @@ extern "C"
 {
 #endif
 
-#include <stdbool.h>
 #include <stdint.h>
 
-enum Methods
+enum ElementType
 {
-    mEuler,
-    mImpEuler,
-    mRK4,
-    mABM,
-    mCustomRK,
-    mQuit
+    number,
+    variable,
+    operation
 };
 
-void startupScreen(void);
+struct EquationElement
+{
+    enum ElementType Type;
+    char VarName;
+    double Number;
+    uint16_t Operation;
+};
 
-enum Methods methodMenu(void);
+int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result);
 
-int drawMenu(const char* title, const char** options, int count);
-
-bool strToNum(uint16_t* str, int len, double* result);
+int prec(uint16_t el);
 
 #ifdef __cplusplus
 }

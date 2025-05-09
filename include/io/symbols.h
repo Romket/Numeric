@@ -197,7 +197,7 @@ extern "C"
 #define LHEX0               0xEC
 #define HEX0                0xED
 
-#define DOTTEDLIGHT         0xEE
+#define DOTTED              0xEE
 #define UPBOLD              0xEF
 #define DOWNBOLD            0xF0
 #define END                 0xF1
@@ -208,7 +208,7 @@ extern "C"
 #define SPACEIND            0xF5
 #define FRAC                0xF6
 #define CURSORBOX           0xF7
-#define DOTTEDBOLD          0xF8
+#define DASHED              0xF8
 #define DOTSMALL2           0xF9
 
 #ifdef __cplusplus
