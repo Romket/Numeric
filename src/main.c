@@ -32,7 +32,8 @@ int main(void)
     #include <stdlib.h>
     os_ClrHome();
     os_SetCursorPos(1, 1);
-    uint16_t* test = readString();
+    uint16_t* test;
+    readString(test);
     // startupScreen();
     // methodMenu();
     free(test);

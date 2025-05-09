@@ -35,9 +35,10 @@
 
 #include <string.h>
 
-uint16_t* readString()
+int readString(uint16_t* result)
 {
-    uint16_t* result = calloc(MAX_STRING_LEN, sizeof(uint16_t));
+    free(result);
+    result = calloc(MAX_STRING_LEN, sizeof(uint16_t));
     
     uint16_t key;
 
@@ -46,8 +47,8 @@ uint16_t* readString()
     unsigned int x, y;
     os_GetCursorPos(&y, &x);
 
-    int length = 0;
-    for (int i = 0; i < MAX_STRING_LEN; ++i)
+    int length, i = 0;
+    for (i = 0; i < MAX_STRING_LEN; ++i)
     {
         key = os_GetKey();
         if (key == k_Enter) break;
@@ -84,5 +85,5 @@ uint16_t* readString()
         }
     }
 
-    return result;
+    return i;
 }

@@ -32,7 +32,7 @@ extern "C"
 
 #include <stdint.h>
 
-uint16_t* readString();
+int readString(uint16_t* result);
 
 #ifdef __cplusplus
 }
