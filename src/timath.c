@@ -35,8 +35,10 @@
 
 int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result)
 {
-    free(result);
+    if (result != NULL) free(result);
     result = malloc((len + 1) * sizeof(uint16_t));
+    if (result == NULL) return -1;
+
     uint16_t stack[len];
     int j = 0;
     int top = -1;
