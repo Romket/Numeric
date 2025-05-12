@@ -47,9 +47,10 @@ struct EquationElement
     uint16_t Operation;
 };
 
-int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result);
-
+int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result);
 int prec(uint16_t el);
+
+double evaluate(struct EquationElement* el, int length, bool* result);
 
 #ifdef __cplusplus
 }

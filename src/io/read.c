@@ -35,10 +35,10 @@
 
 #include <string.h>
 
-int readString(uint16_t* result)
+int readString(uint16_t** result)
 {
-    free(result);
-    result = calloc(MAX_STRING_LEN, sizeof(uint16_t));
+    if (*result != NULL) free(*result);
+    *result = calloc(MAX_STRING_LEN, sizeof(uint16_t));
     
     uint16_t key;
 
@@ -73,14 +73,14 @@ int readString(uint16_t* result)
             os_SetCursorPos(y, x);
 
             // Reset result
-            memset(result, 0, MAX_STRING_LEN * sizeof(uint16_t));
+            memset(*result, 0, MAX_STRING_LEN * sizeof(uint16_t));
             i = 0;
         }
 
         char str[SCREEN_WIDTH_CHARS] = {0};
         if ((length = getKeyStringKey(key, str)) != -1)
         {
-            result[i] = key;
+            (*result)[i] = key;
             printStr(str);
         }
     }

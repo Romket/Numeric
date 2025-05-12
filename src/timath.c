@@ -33,11 +33,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result)
+int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
 {
-    if (result != NULL) free(result);
-    result = malloc((len + 1) * sizeof(uint16_t));
-    if (result == NULL) return -1;
+    if (*result != NULL) free(*result);
+    *result = malloc((len + 1) * sizeof(uint16_t));
+    if (*result == NULL) return -1;
 
     uint16_t stack[len];
     int j = 0;
@@ -85,7 +85,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result)
                 num,
                 0
             };
-            result[j++] = el;
+            (*result)[j++] = el;
             canImpMultLast = true;
 
             --i;
@@ -124,7 +124,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result)
                     0,
                     stack[top--]
                 };
-                result[j++] = el;
+                (*result)[j++] = el;
             }
             top--;
 
@@ -148,7 +148,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result)
                 result[j++] = el;
             }
             stack[++top] = eq[i];
-            if (pr == 5) stack[++top] = k_LParen;
+            if (pr == 5) stack[++top] = k_LParen; // sin, cos, etc. has a '('
 
             canImpMultLast = false;
         }
@@ -163,7 +163,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement* result)
             0,
             stack[top--]
         };
-        result[j++] = el;
+        (*result)[j++] = el;
     }
 
     return j - 1;
