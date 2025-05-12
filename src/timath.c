@@ -30,8 +30,86 @@
 
 #include <ti/getkey.h>
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
+double evaluate(struct EquationElement* eq, int eqLen, bool* status,
+                struct Variable* vars, int numVars)
+{
+    double stack[MAX_STRING_LEN] = {0.0};
+    int top = 0;
+
+    *status = true;
+
+    for (int i = 0; i < eqLen; ++i)
+    {
+        switch (eq[i].Type)
+        {
+            case number:
+                stack[top++] = eq[i].Number;
+                break;
+            case variable:
+                for (int j = 0; j < numVars; ++j)
+                {
+                    if (vars[j].Name == eq[i].VarName)
+                    {
+                        stack[top++] = vars[j].Value;
+                        break;
+                    }
+                }
+                break;
+            // TODO: Implement constants like e, pi, etc.
+            // TODO: Maybe not as a separate ElementType, but as a Number
+            // case constant:
+            //     stack[top++] = toConstant(eq[i].ConstName);
+            case operation:
+            {
+                double a = stack[--top];
+                double b = stack[top - 1];
+                double result = ex(a, b, eq[i].Operation, &top);
+                if (result == NAN)
+                {
+                    *status = false;
+                    return 0.0;
+                }
+                stack[top++] = result;
+                break;
+            }
+        }
+    }
+
+    return stack[0];
+}
+
+double ex(double a, double b, uint16_t op, int* top)
+{
+    switch (op)
+    {
+        case k_Add:   --*top; return a + b;
+        case k_Sub:   --*top; return a - b;
+        case k_Mul:   --*top; return a * b;
+        case k_Div:   --*top; return a / b;
+        case k_Expon: --*top; return pow(a, b);
+        case k_Sin:           return sin(a);
+        case k_ASin:          return asin(a);
+        case k_Cos:           return cos(a);
+        case k_ACos:          return acos(a);
+        case k_Tan:           return tan(a);
+        case k_ATan:          return atan(a);
+        case k_Sqrt:          return sqrt(a);
+        case k_Ln:            return log(a);
+        // TODO: handle different log bases, different roots, etc.
+        case k_SinH:          return sinh(a);
+        case k_CosH:          return cosh(a);
+        case k_TanH:          return tanh(a);
+        case k_ASinH:         return asinh(a);
+        case k_ACosH:         return acosh(a);
+        case k_ATanH:         return atanh(a);
+        case k_Abs:           return a < 0 ? -1.0 * a : a;
+        default:              return NAN;
+    }
+}
 
 int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
 {
@@ -61,7 +139,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
                         0,
                         stack[top--]
                     };
-                    result[j++] = el;
+                    (*result)[j++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -104,7 +182,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
                         0,
                         stack[top--]
                     };
-                    result[j++] = el;
+                    (*result)[j++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -145,7 +223,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
                     0,
                     stack[top--]
                 };
-                result[j++] = el;
+                (*result)[j++] = el;
             }
             stack[++top] = eq[i];
             if (pr == 5) stack[++top] = k_LParen; // sin, cos, etc. has a '('

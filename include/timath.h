@@ -30,6 +30,7 @@ extern "C"
 {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
 
 enum ElementType
@@ -47,10 +48,18 @@ struct EquationElement
     uint16_t Operation;
 };
 
+struct Variable
+{
+    char Name;
+    double Value;
+};
+
 int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result);
 int prec(uint16_t el);
 
-double evaluate(struct EquationElement* el, int length, bool* result);
+double evaluate(struct EquationElement* eq, int eqLen, bool* status,
+                struct Variable* vars, int numVars);
+double ex(double a, double b, uint16_t op, int* top);
 
 #ifdef __cplusplus
 }
