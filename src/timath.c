@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ti/screen.h"
 #include <timath.h>
 
 #include <util.h>
@@ -126,8 +127,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
     for (int i = 0; i < len; ++i)
     {
         // If the scanned character is an operand, add it to the output string.
-        if (((eq[i] - k_0) >= 0 && (eq[i] - k_0) <= 9) || eq[i] == k_DecPnt ||
-            eq[i] == k_Chs)
+        if ((eq[i] >= k_0 && eq[i] <= k_9) || eq[i] == k_DecPnt)
         {
             if (canImpMultLast)
             {
@@ -145,17 +145,19 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
             }
 
             uint16_t str[len];
-            int start = i;
-            memset(str, 0, len * sizeof(uint16_t));
+            int k = 0;
+            memset(str, k_0, len * sizeof(uint16_t));
 
-            while ((eq[i] - k_0 >= 0 && eq[i] - k_0 <= 9) || eq[i] == k_DecPnt)
+            while (((eq[i] >= k_0 && eq[i] <= k_9) || eq[i] == k_DecPnt)
+                   && i < len)
             {
-                str[i - start] = eq[i];
+                str[k] = eq[i];
                 ++i;
+                ++k;
             }
 
             double num;
-            if (!strToNum(str, len, &num)) return -1;
+            if (!strToNum(str, k, &num)) return -1;
 
             struct EquationElement el = {
                 number,
@@ -244,7 +246,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
         (*result)[j++] = el;
     }
 
-    return j - 1;
+    return j;
 }
 
 int prec(uint16_t c)

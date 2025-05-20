@@ -35,6 +35,8 @@ extern "C"
 #define SCREEN_WIDTH_CHARS 26
 #define CLEAR_LINE "                          "
 
+#define MAX_DIGITS 16
+
 #ifdef __cplusplus
 }
 #endif

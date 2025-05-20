@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "stdbool.h"
 #include <io/read.h>
 
 #include <io/iodefs.h>
@@ -42,7 +43,7 @@ int readString(uint16_t** result)
     
     uint16_t key;
 
-    setCursor(true);
+    os_EnableCursor();
 
     unsigned int x, y;
     os_GetCursorPos(&y, &x);
@@ -84,6 +85,14 @@ int readString(uint16_t** result)
             printStr(str);
         }
     }
+
+    os_DisableCursor();
+
+    char clearCursorDot[2] = {0};
+    clearCursorDot[0] = ' ';
+    os_PutStrLine(clearCursorDot);
+
+    os_NewLine();
 
     return i;
 }

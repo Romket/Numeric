@@ -25,16 +25,13 @@
 
 #include <io/print.h>
 
+#include <io/symbols.h>
+
+#include <math.h>
 #include <ti/screen.h>
 
 void printStr(const char* str)
 {
-    if (cursorEnabled)
-    {
-        os_PutStrFull(str);
-        return;
-    }
-
     int lineBufferIndex = 0;
 
     unsigned int x, y;
@@ -91,13 +88,72 @@ void printChar(const char val)
 
     os_PutStrLine(buf);
 
-    if (++x == SCREEN_WIDTH_CHARS) isLineEnd = true;
+    if (x + 1 == SCREEN_WIDTH_CHARS) isLineEnd = true;
 }
 
-void setCursor(bool status)
+void printInt(int val)
 {
-    if (status) os_EnableCursor();
-    else os_DisableCursor();
+    if (val < 0)
+    {
+        printChar(CHS);
+        val *= -1;
+    }
 
-    cursorEnabled = status;
+    if (val == 0) printChar('0');
+    else
+    {
+        char digits[20];
+        int i = 0;
+        while (val > 0)
+        {
+            digits[i++] = '0' + (val % 10);
+            val /= 10;
+        }
+
+        for (int j = i - 1; j >= 0; --j)
+        {
+            printChar(digits[j]);
+        }
+    }
+}
+
+void printDouble(double val)
+{
+    if (val < 0)
+    {
+        printChar(CHS);
+        val *= -1.0;
+    }
+
+    int intPart = (int)val;
+    double fracPart = val - intPart;
+
+    if (intPart == 0) printChar('0');
+    else
+    {
+        char digits[20];
+        int i = 0;
+        while (intPart > 0)
+        {
+            digits[i++] = '0' + (intPart % 10);
+            intPart /= 10;
+        }
+
+        for (int j = i - 1; j >= 0; --j)
+        {
+            printChar(digits[j]);
+        }
+    }
+
+    if (fracPart == 0) return;
+
+    printChar('.');
+
+    for (int i = 0; i < MAX_DIGITS; i++)
+    {
+        fracPart *= 10;
+        int digit = (int)fracPart;
+        printChar('0' + digit);
+        fracPart -= digit;
+    }
 }

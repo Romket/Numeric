@@ -162,9 +162,9 @@ bool strToNum(uint16_t* str, int len, double* result)
 
     for (int i = 0 + negative; i < len; ++i)
     {
-        if (place == 0 && str[i] != k_DecPnt)
+        if (place == 1.0 && str[i] != k_DecPnt)
         {
-            *result *= 10;
+            *result *= 10.0;
             *result += str[i] - k_0;
         }
         else if (str[i] == k_DecPnt && place != 1.0) return false;

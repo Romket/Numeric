@@ -44,9 +44,6 @@ void printInt(int val);
 
 void printDouble(double val);
 
-static bool cursorEnabled = false;
-void setCursor(bool status);
-
 #ifdef __cplusplus
 }
 #endif
