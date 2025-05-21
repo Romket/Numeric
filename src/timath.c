@@ -66,9 +66,9 @@ double evaluate(struct EquationElement* eq, int eqLen, bool* status,
             //     stack[top++] = toConstant(eq[i].ConstName);
             case operation:
             {
-                double a = stack[--top];
-                double b = stack[top - 1];
-                double result = ex(a, b, eq[i].Operation, &top);
+                double second = stack[--top];
+                double first = stack[top - 1];
+                double result = ex(first, second, eq[i].Operation, &top);
                 if (result == NAN)
                 {
                     *status = false;
@@ -83,31 +83,43 @@ double evaluate(struct EquationElement* eq, int eqLen, bool* status,
     return stack[0];
 }
 
-double ex(double a, double b, uint16_t op, int* top)
+double ex(double first, double second, uint16_t op, int* top)
 {
     switch (op)
     {
-        case k_Add:   --*top; return a + b;
-        case k_Sub:   --*top; return a - b;
-        case k_Mul:   --*top; return a * b;
-        case k_Div:   --*top; return a / b;
-        case k_Expon: --*top; return pow(a, b);
-        case k_Sin:           return sin(a);
-        case k_ASin:          return asin(a);
-        case k_Cos:           return cos(a);
-        case k_ACos:          return acos(a);
-        case k_Tan:           return tan(a);
-        case k_ATan:          return atan(a);
-        case k_Sqrt:          return sqrt(a);
-        case k_Ln:            return log(a);
+        // prec 5
+        case k_Sin:           return sin(second);
+        case k_ASin:          return asin(second);
+        case k_Cos:           return cos(second);
+        case k_ACos:          return acos(second);
+        case k_Tan:           return tan(second);
+        case k_ATan:          return atan(second);
+        case k_Sqrt:          return sqrt(second);
+        case k_Ln:            return log(second);
         // TODO: handle different log bases, different roots, etc.
-        case k_SinH:          return sinh(a);
-        case k_CosH:          return cosh(a);
-        case k_TanH:          return tanh(a);
-        case k_ASinH:         return asinh(a);
-        case k_ACosH:         return acosh(a);
-        case k_ATanH:         return atanh(a);
-        case k_Abs:           return a < 0 ? -1.0 * a : a;
+        case k_SinH:          return sinh(second);
+        case k_CosH:          return cosh(second);
+        case k_TanH:          return tanh(second);
+        case k_ASinH:         return asinh(second);
+        case k_ACosH:         return acosh(second);
+        case k_ATanH:         return atanh(second);
+        case k_Abs:           return second < 0 ? -1.0 * second : second;
+
+        // prec 4
+        case k_Expon: --*top; return pow(first, second);
+        case k_EE:    --*top; return first * pow(10, second);
+        case k_Inv:           return 1.0 / second;
+        case k_Square:        return second * second;
+
+        // prec 3 (implicit multiplication)
+        // prec 2
+        case k_Mul:   --*top; return first * second;
+        case k_Div:   --*top; return first / second;
+
+        // prec 1
+        case k_Add:   --*top; return first + second;
+        case k_Sub:   --*top; return first - second;
+
         default:              return NAN;
     }
 }
@@ -299,6 +311,7 @@ int prec(uint16_t c)
         case k_ASinH:
         case k_ACosH:
         case k_ATanH:
+        case k_Abs:
             return 5;
         
         case k_Expon:
