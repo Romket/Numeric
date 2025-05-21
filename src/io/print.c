@@ -27,7 +27,6 @@
 
 #include <io/symbols.h>
 
-#include <math.h>
 #include <ti/screen.h>
 
 void printStr(const char* str)

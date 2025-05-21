@@ -1,5 +1,5 @@
 /**
- * @file token.h
+ * @file symbols.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
  * @brief Defines tokens for characters such as pi, exponents, etc.
  * @version 0.1
