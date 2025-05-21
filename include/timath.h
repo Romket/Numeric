@@ -40,25 +40,25 @@ enum ElementType
     operation
 };
 
-struct EquationElement
+typedef struct EquationElementStruct
 {
     enum ElementType Type;
     uint16_t VarName;
     double Number;
     uint16_t Operation;
-};
+} EquationElement;
+typedef EquationElement* Equation;
 
-struct Variable
+typedef struct VariableStruct
 {
     uint16_t Name;
     double Value;
-};
+} Variable;
 
-int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result);
+int parseToPostfix(uint16_t* eq, int len, Equation* result);
 int prec(uint16_t el);
 
-double evaluate(struct EquationElement* eq, int eqLen, bool* status,
-                struct Variable* vars, int numVars);
+double evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars);
 double ex(double a, double b, uint16_t op, int* top);
 
 #ifdef __cplusplus

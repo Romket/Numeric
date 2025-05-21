@@ -34,15 +34,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-double evaluate(struct EquationElement* eq, int eqLen, bool* status,
-                struct Variable* vars, int numVars)
+double evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
 {
     double stack[MAX_STRING_LEN] = {0.0};
     int top = 0;
 
     *status = true;
 
-    for (int i = 0; i < eqLen; ++i)
+    for (int i = 0; i < len; ++i)
     {
         switch (eq[i].Type)
         {
@@ -50,7 +49,7 @@ double evaluate(struct EquationElement* eq, int eqLen, bool* status,
                 stack[top++] = eq[i].Number;
                 break;
             case variable:
-                for (int j = 0; j < numVars; ++j)
+                for (int j = 0; j < nVars; ++j)
                 {
                     if (vars[j].Name == eq[i].VarName)
                     {
@@ -124,7 +123,7 @@ double ex(double first, double second, uint16_t op, int* top)
     }
 }
 
-int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
+int parseToPostfix(uint16_t* eq, int len, Equation* result)
 {
     if (*result != NULL) free(*result);
     *result = malloc((len + 1) * sizeof(uint16_t));
@@ -145,7 +144,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    struct EquationElement el = {
+                    EquationElement el = {
                         operation,
                         ' ',
                         0,
@@ -171,7 +170,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
             double num;
             if (!strToNum(str, k, &num)) return -1;
 
-            struct EquationElement el = {
+            EquationElement el = {
                 number,
                 ' ',
                 num,
@@ -191,7 +190,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    struct EquationElement el = {
+                    EquationElement el = {
                         operation,
                         ' ',
                         0,
@@ -202,7 +201,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
                 stack[++top] = k_Mul;
             }
 
-            struct EquationElement el = {
+            EquationElement el = {
                 variable,
                 eq[i],
                 0,
@@ -219,7 +218,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    struct EquationElement el = {
+                    EquationElement el = {
                         operation,
                         ' ',
                         0,
@@ -239,7 +238,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
         {
             while (top != -1 && stack[top] != k_LParen)
             {
-                struct EquationElement el = {
+                EquationElement el = {
                     operation,
                     ' ',
                     0,
@@ -260,7 +259,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
 
             while (top != -1 && pr <= prec(stack[top]))
             {
-                struct EquationElement el = {
+                EquationElement el = {
                     operation,
                     ' ',
                     0,
@@ -278,7 +277,7 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
     // Pop all the remaining elements from the stack
     while (top != -1)
     {
-        struct EquationElement el = {
+        EquationElement el = {
             operation,
             ' ',
             0,

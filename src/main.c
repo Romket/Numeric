@@ -40,7 +40,7 @@ int main(void)
     os_ClrHome();
     uint16_t* test = NULL;
     int len = readString(&test);
-    struct EquationElement* postfix = NULL;
+    Equation postfix = NULL;
     int postfixLen = parseToPostfix(test, len, &postfix);
     if (postfixLen == -1)
     {
