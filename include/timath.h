@@ -43,14 +43,14 @@ enum ElementType
 struct EquationElement
 {
     enum ElementType Type;
-    char VarName;
+    uint16_t VarName;
     double Number;
     uint16_t Operation;
 };
 
 struct Variable
 {
-    char Name;
+    uint16_t Name;
     double Value;
 };
 

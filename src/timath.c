@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ti/screen.h"
 #include <timath.h>
 
 #include <util.h>
@@ -59,7 +58,8 @@ double evaluate(struct EquationElement* eq, int eqLen, bool* status,
                         break;
                     }
                 }
-                break;
+                *status = false;
+                return 0.0;
             // TODO: Implement constants like e, pi, etc.
             // TODO: Maybe not as a separate ElementType, but as a Number
             // case constant:
@@ -169,6 +169,35 @@ int parseToPostfix(uint16_t* eq, int len, struct EquationElement** result)
             canImpMultLast = true;
 
             --i;
+        }
+
+        // Same logic for variables as for numbers
+        else if ((eq[i] >= k_CapA && eq[i] <= k_CapZ) || eq[i] == k_Varx ||
+                 eq[i] == k_Theta)
+        {
+            if (canImpMultLast)
+            {
+                while (top != -1 && 3 <= prec(stack[top]))
+                {
+                    struct EquationElement el = {
+                        operation,
+                        ' ',
+                        0,
+                        stack[top--]
+                    };
+                    (*result)[j++] = el;
+                }
+                stack[++top] = k_Mul;
+            }
+
+            struct EquationElement el = {
+                variable,
+                eq[i],
+                0,
+                0
+            };
+            (*result)[j++] = el;
+            canImpMultLast = true;
         }
 
         // If the scanned character is ‘(‘, push it to the stack.

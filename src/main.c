@@ -58,7 +58,9 @@ int main(void)
         }
         else if (postfix[i].Type == variable)
         {
-            printChar(postfix[i].VarName);
+            char str[MAX_STRING_LEN] = {0};
+            getKeyStringKey(postfix[i].VarName, str);
+            printStr(str);
         }
         else
         {
