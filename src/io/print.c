@@ -116,47 +116,6 @@ void printInt(int val)
     }
 }
 
-void printDouble(double val)
-{
-    if (val < 0)
-    {
-        printChar(CHS);
-        val *= -1.0;
-    }
-
-    int intPart = (int)val;
-    double fracPart = val - intPart;
-
-    if (intPart == 0) printChar('0');
-    else
-    {
-        char digits[20];
-        int i = 0;
-        while (intPart > 0)
-        {
-            digits[i++] = '0' + (intPart % 10);
-            intPart /= 10;
-        }
-
-        for (int j = i - 1; j >= 0; --j)
-        {
-            printChar(digits[j]);
-        }
-    }
-
-    if (fracPart == 0) return;
-
-    printChar('.');
-
-    for (int i = 0; i < MAX_DIGITS; i++)
-    {
-        fracPart *= 10;
-        int digit = (int)fracPart;
-        printChar('0' + digit);
-        fracPart -= digit;
-    }
-}
-
 void printReal(const real_t val)
 {
     char str[MAX_STRING_LEN] = {0};
