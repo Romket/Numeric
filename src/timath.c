@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ti/real.h"
 #include <timath.h>
 
 #include <util.h>
@@ -31,6 +32,7 @@
 
 #include <ti/getkey.h>
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -67,10 +69,6 @@ real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
                 }
                 break;
             }
-            // TODO: Implement constants like e, pi, etc.
-            // TODO: Maybe not as a separate ElementType, but as a Number
-            // case constant:
-            //     stack[top++] = toConstant(eq[i].ConstName);
             case operation:
             {
                 real_t second = stack[--top];
@@ -228,6 +226,35 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 {0},
                 0
             };
+            (*result)[j++] = el;
+            canImpMultLast = true;
+        }
+
+        // Constants
+        else if (eq[i] == k_Pi || eq[i] == k_CONSTeA)
+        {
+            if (canImpMultLast)
+            {
+                while (top != -1 && 3 <= prec(stack[top]))
+                {
+                    EquationElement el = {
+                        operation,
+                        ' ',
+                        {0},
+                        stack[top--]
+                    };
+                    (*result)[j++] = el;
+                }
+                stack[++top] = k_Mul;
+            }
+
+            EquationElement el = {
+                number,
+                ' ',
+                os_FloatToReal(eq[i] == k_Pi ? M_PI : M_E),
+                0
+            };
+
             (*result)[j++] = el;
             canImpMultLast = true;
         }

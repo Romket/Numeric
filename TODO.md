@@ -1,7 +1,7 @@
 # TODO
 ## High Priority
 - [x] Variables
-- [ ] Constants
+- [x] Constants
 - [ ] Equations vs. expressions
 
 ## Medium Priority
