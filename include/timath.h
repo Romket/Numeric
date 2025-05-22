@@ -30,6 +30,8 @@ extern "C"
 {
 #endif
 
+#include <ti/real.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -40,26 +42,38 @@ enum ElementType
     operation
 };
 
-typedef struct EquationElementStruct
+typedef struct EquationElement
 {
     enum ElementType Type;
     uint16_t VarName;
-    double Number;
+    real_t Number;
     uint16_t Operation;
 } EquationElement;
 typedef EquationElement* Equation;
 
-typedef struct VariableStruct
+typedef struct Variable
 {
     uint16_t Name;
-    double Value;
+    real_t Value;
 } Variable;
 
 int parseToPostfix(uint16_t* eq, int len, Equation* result);
 int prec(uint16_t el);
 
-double evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars);
-double ex(double a, double b, uint16_t op, int* top);
+real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars);
+real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status);
+
+real_t realSinhRad(const real_t* arg);
+real_t realCoshRad(const real_t* arg);
+real_t realTanhRad(const real_t* arg);
+
+real_t realAsinhRad(const real_t* arg);
+real_t realAcoshRad(const real_t* arg);
+real_t realAtanhRad(const real_t* arg);
+
+real_t realAbs(const real_t* arg);
+
+real_t realEE(const real_t* arg1, const real_t* arg2);
 
 #ifdef __cplusplus
 }

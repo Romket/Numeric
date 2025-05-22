@@ -25,6 +25,7 @@
 
 #include "io/iodefs.h"
 #include "ti/getcsc.h"
+#include "ti/real.h"
 #include <string.h>
 #include <util.h>
 
@@ -54,7 +55,7 @@ int main(void)
     {
         if (postfix[i].Type == number)
         {
-            printDouble(postfix[i].Number);
+            printReal(postfix[i].Number);
         }
         else if (postfix[i].Type == variable)
         {
@@ -70,7 +71,7 @@ int main(void)
         }
     }
     printChar('\n');
-    double result = evaluate(postfix, postfixLen, &status, NULL, 0);
+    real_t result = evaluate(postfix, postfixLen, &status, NULL, 0);
     if (!status)
     {
         os_ClrHome();
@@ -78,7 +79,9 @@ int main(void)
         while (!os_GetCSC());
         return 1;
     }
-    printDouble(result);
+
+    printReal(result);
+
     while (!os_GetCSC());
     // startupScreen();
     // methodMenu();

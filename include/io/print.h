@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include "ti/real.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -43,6 +44,8 @@ void printChar(const char val);
 void printInt(int val);
 
 void printDouble(double val);
+
+void printReal(const real_t val);
 
 #ifdef __cplusplus
 }

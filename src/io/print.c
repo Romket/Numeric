@@ -156,3 +156,10 @@ void printDouble(double val)
         fracPart -= digit;
     }
 }
+
+void printReal(const real_t val)
+{
+    char str[MAX_STRING_LEN] = {0};
+    os_RealToStr(str, &val, 0, 0, -1);
+    printStr(str);
+}

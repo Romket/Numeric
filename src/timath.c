@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ti/real.h"
 #include <timath.h>
 
 #include <util.h>
@@ -30,13 +31,12 @@
 
 #include <ti/getkey.h>
 
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-double evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
+real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
 {
-    double stack[MAX_STRING_LEN] = {0.0};
+    real_t stack[MAX_STRING_LEN] = {os_Int24ToReal(0)};
     int top = 0;
 
     *status = true;
@@ -58,20 +58,27 @@ double evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
                     }
                 }
                 *status = false;
-                return 0.0;
+                return os_Int24ToReal(0);
             // TODO: Implement constants like e, pi, etc.
             // TODO: Maybe not as a separate ElementType, but as a Number
             // case constant:
             //     stack[top++] = toConstant(eq[i].ConstName);
             case operation:
             {
-                double second = stack[--top];
-                double first = stack[top - 1];
-                double result = ex(first, second, eq[i].Operation, &top);
-                if (result == NAN)
+                real_t second = stack[--top];
+                real_t first = stack[top - 1];
+                bool exStatus = true;
+                real_t result = ex(first, second, eq[i].Operation, &top,
+                                   &exStatus);
+                if (!exStatus)
                 {
                     *status = false;
-                    return 0.0;
+                    return os_Int24ToReal(0);
+                }
+                if (top < 0)
+                {
+                    *status = false;
+                    return os_Int24ToReal(0);
                 }
                 stack[top++] = result;
                 break;
@@ -82,44 +89,45 @@ double evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
     return stack[0];
 }
 
-double ex(double first, double second, uint16_t op, int* top)
+real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status)
 {
     switch (op)
     {
         // prec 5
-        case k_Sin:           return sin(second);
-        case k_ASin:          return asin(second);
-        case k_Cos:           return cos(second);
-        case k_ACos:          return acos(second);
-        case k_Tan:           return tan(second);
-        case k_ATan:          return atan(second);
-        case k_Sqrt:          return sqrt(second);
-        case k_Ln:            return log(second);
+        case k_Sin:           return os_RealSinRad(&second);
+        case k_ASin:          return os_RealAsinRad(&second);
+        case k_Cos:           return os_RealCosRad(&second);
+        case k_ACos:          return os_RealAcosRad(&second);
+        case k_Tan:           return os_RealTanRad(&second);
+        case k_ATan:          return os_RealAtanRad(&second);
+        case k_Sqrt:          return os_RealSqrt(&second);
+        case k_Ln:            return os_RealLog(&second);
         // TODO: handle different log bases, different roots, etc.
-        case k_SinH:          return sinh(second);
-        case k_CosH:          return cosh(second);
-        case k_TanH:          return tanh(second);
-        case k_ASinH:         return asinh(second);
-        case k_ACosH:         return acosh(second);
-        case k_ATanH:         return atanh(second);
-        case k_Abs:           return second < 0 ? -1.0 * second : second;
+        case k_SinH:          return realSinhRad(&second);
+        case k_CosH:          return realCoshRad(&second);
+        case k_TanH:          return realTanhRad(&second);
+        case k_ASinH:         return realAsinhRad(&second);
+        case k_ACosH:         return realAcoshRad(&second);
+        case k_ATanH:         return realAtanhRad(&second);
+        case k_Abs:           return realAbs(&second);
 
         // prec 4
-        case k_Expon: --*top; return pow(first, second);
-        case k_EE:    --*top; return first * pow(10, second);
-        case k_Inv:           return 1.0 / second;
-        case k_Square:        return second * second;
+        case k_Expon: --*top; return os_RealPow(&first, &second);
+        case k_Inv:           return os_RealInv(&second);
+        case k_Square:        return os_RealMul(&second, &second);
+        case k_EE:    --*top; return realEE(&first, &second);
 
         // prec 3 (implicit multiplication)
         // prec 2
-        case k_Mul:   --*top; return first * second;
-        case k_Div:   --*top; return first / second;
+        case k_Mul:   --*top; return os_RealMul(&first, &second);
+        case k_Div:   --*top; return os_RealDiv(&first, &second);
+        case k_Chs:           return os_RealNeg(&second);
 
         // prec 1
-        case k_Add:   --*top; return first + second;
-        case k_Sub:   --*top; return first - second;
+        case k_Add:   --*top; return os_RealAdd(&first, &second);
+        case k_Sub:   --*top; return os_RealSub(&first, &second);
 
-        default:              return NAN;
+        default: *status = false; return os_Int24ToReal(0);
     }
 }
 
@@ -147,7 +155,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        0,
+                        os_Int24ToReal(0),
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -155,20 +163,22 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 stack[++top] = k_Mul;
             }
 
-            uint16_t str[len];
+            char str[len];
             int k = 0;
-            memset(str, k_0, len * sizeof(uint16_t));
+            memset(str, 0, len);
 
             while (((eq[i] >= k_0 && eq[i] <= k_9) || eq[i] == k_DecPnt)
                    && i < len)
             {
-                str[k] = eq[i];
+                if (eq[i] >= k_0 && eq[i] <= k_9) str[k] = (eq[i] - k_0) + '0';
+                else str[k] = '.';
+
                 ++i;
                 ++k;
             }
 
-            double num;
-            if (!strToNum(str, k, &num)) return -1;
+            char* end = &str[k - 1];
+            real_t num = os_StrToReal(str, &end);
 
             EquationElement el = {
                 number,
@@ -193,7 +203,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        0,
+                        os_Int24ToReal(0),
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -204,7 +214,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
             EquationElement el = {
                 variable,
                 eq[i],
-                0,
+                os_Int24ToReal(0),
                 0
             };
             (*result)[j++] = el;
@@ -221,7 +231,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        0,
+                        os_Int24ToReal(0),
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -241,7 +251,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 EquationElement el = {
                     operation,
                     ' ',
-                    0,
+                    os_Int24ToReal(0),
                     stack[top--]
                 };
                 (*result)[j++] = el;
@@ -257,12 +267,27 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
             int pr = prec(eq[i]);
             if (pr == -1) return -1;
 
+            if (pr == 5 && canImpMultLast) // e.g. 5sin(x) is valid
+            {
+                while (top != -1 && 3 <= prec(stack[top]))
+                {
+                    EquationElement el = {
+                        operation,
+                        ' ',
+                        os_Int24ToReal(0),
+                        stack[top--]
+                    };
+                    (*result)[j++] = el;
+                }
+                stack[++top] = k_Mul;
+            }
+
             while (top != -1 && pr <= prec(stack[top]))
             {
                 EquationElement el = {
                     operation,
                     ' ',
-                    0,
+                    os_Int24ToReal(0),
                     stack[top--]
                 };
                 (*result)[j++] = el;
@@ -280,7 +305,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
         EquationElement el = {
             operation,
             ' ',
-            0,
+            os_Int24ToReal(0),
             stack[top--]
         };
         (*result)[j++] = el;
@@ -323,6 +348,7 @@ int prec(uint16_t c)
 
         case k_Div:
         case k_Mul:
+        case k_Chs:
             return 2;
         
         case k_Add:
@@ -332,4 +358,96 @@ int prec(uint16_t c)
         default:
             return -1;
     }
+}
+
+real_t realSinhRad(const real_t* arg)
+{
+    real_t exp = os_RealExp(arg);
+
+    real_t neg = os_RealNeg(arg);
+    real_t expNeg = os_RealExp(&neg);
+
+    real_t sub = os_RealSub(&exp, &expNeg);
+
+    real_t two = os_Int24ToReal(2);
+
+    return os_RealDiv(&sub, &two);
+}
+
+real_t realCoshRad(const real_t* arg)
+{
+    real_t exp = os_RealExp(arg);
+
+    real_t neg = os_RealNeg(arg);
+    real_t expNeg = os_RealExp(&neg);
+
+    real_t add = os_RealAdd(&exp, &expNeg);
+
+    real_t two = os_Int24ToReal(2);
+
+    return os_RealDiv(&add, &two);
+}
+
+real_t realTanhRad(const real_t* arg)
+{
+    real_t sinh = realSinhRad(arg);
+    real_t cosh = realCoshRad(arg);
+
+    return os_RealDiv(&sinh, &cosh);
+}
+
+real_t realAsinhRad(const real_t* arg)
+{
+    real_t square = os_RealMul(arg, arg);
+    
+    real_t one = os_Int24ToReal(1);
+    real_t addOne = os_RealAdd(&square, &one);
+
+    real_t sqrt = os_RealSqrt(&addOne);
+    real_t addArg = os_RealAdd(arg, &sqrt);
+
+    return os_RealLog(&addArg);
+}
+
+real_t realAcoshRad(const real_t* arg)
+{
+    real_t square = os_RealMul(arg, arg);
+    
+    real_t one = os_Int24ToReal(1);
+    real_t subOne = os_RealSub(&square, &one);
+
+    real_t sqrt = os_RealSqrt(&subOne);
+    real_t addArg = os_RealAdd(arg, &sqrt);
+
+    return os_RealLog(&addArg);
+}
+
+real_t realAtanhRad(const real_t* arg)
+{
+    real_t one = os_Int24ToReal(1);
+
+    real_t addToOne = os_RealAdd(&one, arg);
+    real_t subFromOne = os_RealSub(&one, arg);
+
+    real_t frac = os_RealDiv(&addToOne, &subFromOne);
+
+    real_t log = os_RealLog(&frac);
+
+    real_t two = os_Int24ToReal(2);
+
+    return os_RealDiv(&log, &two);
+}
+
+real_t realAbs(const real_t* arg)
+{
+    real_t zero = os_Int24ToReal(0);
+    real_t neg = os_RealNeg(arg);
+    return os_RealCompare(arg, &zero) < 0 ? neg : *arg;
+}
+
+real_t realEE(const real_t* arg1, const real_t* arg2)
+{
+    real_t ten = os_Int24ToReal(10);
+    real_t pow = os_RealPow(&ten, arg2);
+    return os_RealMul(arg1, &pow);
 }
