@@ -45,7 +45,7 @@ enum ElementType
 typedef struct EquationElement
 {
     enum ElementType Type;
-    uint16_t VarName;
+    char VarName;
     real_t Number;
     uint16_t Operation;
 } EquationElement;
@@ -53,7 +53,7 @@ typedef EquationElement* Equation;
 
 typedef struct Variable
 {
-    uint16_t Name;
+    char Name;
     real_t Value;
 } Variable;
 

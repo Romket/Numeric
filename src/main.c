@@ -23,9 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "io/iodefs.h"
-#include "ti/getcsc.h"
-#include "ti/real.h"
 #include <string.h>
 #include <util.h>
 
@@ -38,6 +35,7 @@ int main(void)
     #include <io/print.h>
     #include <ti/getkey.h>
     #include <io/key.h>
+    #include <ti/getcsc.h>
     os_ClrHome();
     uint16_t* test = NULL;
     int len = readString(&test);
@@ -59,9 +57,7 @@ int main(void)
         }
         else if (postfix[i].Type == variable)
         {
-            char str[MAX_STRING_LEN] = {0};
-            getKeyStringKey(postfix[i].VarName, str);
-            printStr(str);
+            printChar(postfix[i].VarName);
         }
         else
         {
@@ -71,11 +67,15 @@ int main(void)
         }
     }
     printChar('\n');
-    real_t result = evaluate(postfix, postfixLen, &status, NULL, 0);
+    Variable vars[1] = {
+        {'X', os_Int24ToReal(2)}
+    };
+
+    real_t result = evaluate(postfix, postfixLen, &status, vars, 1);
     if (!status)
     {
         os_ClrHome();
-        printStr("Error in evaluating postfix expression");
+        printStr("Error in evaluating postfix expression\n");
         while (!os_GetCSC());
         return 1;
     }

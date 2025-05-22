@@ -23,11 +23,11 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ti/real.h"
 #include <timath.h>
 
 #include <util.h>
 #include <io/iodefs.h>
+#include <io/key.h>
 
 #include <ti/getkey.h>
 
@@ -36,7 +36,7 @@
 
 real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
 {
-    real_t stack[MAX_STRING_LEN] = {os_Int24ToReal(0)};
+    real_t stack[MAX_STRING_LEN] = {{0}};
     int top = 0;
 
     *status = true;
@@ -49,16 +49,24 @@ real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
                 stack[top++] = eq[i].Number;
                 break;
             case variable:
+            {
+                bool found = false;
                 for (int j = 0; j < nVars; ++j)
                 {
                     if (vars[j].Name == eq[i].VarName)
                     {
+                        found = true;
                         stack[top++] = vars[j].Value;
                         break;
                     }
                 }
-                *status = false;
-                return os_Int24ToReal(0);
+                if (!found)
+                {
+                    *status = false;
+                    return os_Int24ToReal(0);
+                }
+                break;
+            }
             // TODO: Implement constants like e, pi, etc.
             // TODO: Maybe not as a separate ElementType, but as a Number
             // case constant:
@@ -155,7 +163,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        os_Int24ToReal(0),
+                        {0},
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -203,7 +211,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        os_Int24ToReal(0),
+                        {0},
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -211,10 +219,13 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 stack[++top] = k_Mul;
             }
 
+            char str[MAX_STRING_LEN] = {0};
+            getKeyStringKey(eq[i], str);
+
             EquationElement el = {
                 variable,
-                eq[i],
-                os_Int24ToReal(0),
+                str[0],
+                {0},
                 0
             };
             (*result)[j++] = el;
@@ -231,7 +242,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        os_Int24ToReal(0),
+                        {0},
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -251,7 +262,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 EquationElement el = {
                     operation,
                     ' ',
-                    os_Int24ToReal(0),
+                    {0},
                     stack[top--]
                 };
                 (*result)[j++] = el;
@@ -274,7 +285,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                     EquationElement el = {
                         operation,
                         ' ',
-                        os_Int24ToReal(0),
+                        {0},
                         stack[top--]
                     };
                     (*result)[j++] = el;
@@ -287,7 +298,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 EquationElement el = {
                     operation,
                     ' ',
-                    os_Int24ToReal(0),
+                    {0},
                     stack[top--]
                 };
                 (*result)[j++] = el;
@@ -305,7 +316,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
         EquationElement el = {
             operation,
             ' ',
-            os_Int24ToReal(0),
+            {0},
             stack[top--]
         };
         (*result)[j++] = el;

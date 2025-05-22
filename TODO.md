@@ -1,6 +1,6 @@
 # TODO
 ## High Priority
-- [ ] Variables
+- [x] Variables
 - [ ] Constants
 - [ ] Equations vs. expressions
 
@@ -9,4 +9,4 @@
 - [ ] Custom math menu
 
 ## Low Priority
-- [ ]
+- [ ] More grouping symbols
