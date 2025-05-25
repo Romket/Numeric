@@ -35,21 +35,21 @@ extern "C"
 #include <stdbool.h>
 #include <stdint.h>
 
-enum ElementType
+typedef enum TokenType
 {
     number,
     variable,
     operation
-};
+} TokenType;
 
-typedef struct EquationElement
+typedef struct Token
 {
-    enum ElementType Type;
+    TokenType Type;
     char VarName;
     real_t Number;
     uint16_t Operation;
-} EquationElement;
-typedef EquationElement* Equation;
+} Token;
+typedef Token* Expression;
 
 typedef struct Variable
 {
@@ -57,10 +57,12 @@ typedef struct Variable
     real_t Value;
 } Variable;
 
-int parseToPostfix(uint16_t* eq, int len, Equation* result);
+int parseToPostfix(uint16_t* in, int len, Expression* result);
 int prec(uint16_t el);
 
-real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars);
+real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
+                int nVars);
+
 real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status);
 
 real_t realSinhRad(const real_t* arg);

@@ -38,7 +38,7 @@ int main(void)
     os_ClrHome();
     uint16_t* test = NULL;
     int len = readString(&test);
-    Equation postfix = NULL;
+    Expression postfix = NULL;
     int postfixLen = parseToPostfix(test, len, &postfix);
     if (postfixLen == -1)
     {

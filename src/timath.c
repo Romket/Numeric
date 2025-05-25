@@ -36,7 +36,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
+real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
+                int nVars)
 {
     real_t stack[MAX_STRING_LEN] = {{0}};
     int top = 0;
@@ -45,17 +46,17 @@ real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
 
     for (int i = 0; i < len; ++i)
     {
-        switch (eq[i].Type)
+        switch (expr[i].Type)
         {
             case number:
-                stack[top++] = eq[i].Number;
+                stack[top++] = expr[i].Number;
                 break;
             case variable:
             {
                 bool found = false;
                 for (int j = 0; j < nVars; ++j)
                 {
-                    if (vars[j].Name == eq[i].VarName)
+                    if (vars[j].Name == expr[i].VarName)
                     {
                         found = true;
                         stack[top++] = vars[j].Value;
@@ -74,7 +75,7 @@ real_t evaluate(Equation eq, int len, bool* status, Variable* vars, int nVars)
                 real_t second = stack[--top];
                 real_t first = stack[top - 1];
                 bool exStatus = true;
-                real_t result = ex(first, second, eq[i].Operation, &top,
+                real_t result = ex(first, second, expr[i].Operation, &top,
                                    &exStatus);
                 if (!exStatus)
                 {
@@ -137,7 +138,7 @@ real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status)
     }
 }
 
-int parseToPostfix(uint16_t* eq, int len, Equation* result)
+int parseToPostfix(uint16_t* in, int len, Expression* result)
 {
     if (*result != NULL) free(*result);
     *result = malloc((len + 1) * sizeof(uint16_t));
@@ -151,14 +152,16 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
 
     for (int i = 0; i < len; ++i)
     {
+        uint16_t c = in[i];
+
         // If the scanned character is an operand, add it to the output string.
-        if ((eq[i] >= k_0 && eq[i] <= k_9) || eq[i] == k_DecPnt)
+        if ((c >= k_0 && c <= k_9) || c == k_DecPnt)
         {
             if (canImpMultLast)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    EquationElement el = {
+                    Token el = {
                         operation,
                         ' ',
                         {0},
@@ -173,10 +176,9 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
             int k = 0;
             memset(str, 0, len);
 
-            while (((eq[i] >= k_0 && eq[i] <= k_9) || eq[i] == k_DecPnt)
-                   && i < len)
+            while (((c >= k_0 && c <= k_9) || c == k_DecPnt) && i < len)
             {
-                if (eq[i] >= k_0 && eq[i] <= k_9) str[k] = (eq[i] - k_0) + '0';
+                if (c >= k_0 && c <= k_9) str[k] = (c - k_0) + '0';
                 else str[k] = '.';
 
                 ++i;
@@ -186,7 +188,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
             char* end = &str[k - 1];
             real_t num = os_StrToReal(str, &end);
 
-            EquationElement el = {
+            Token el = {
                 number,
                 ' ',
                 num,
@@ -199,14 +201,13 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
         }
 
         // Same logic for variables as for numbers
-        else if ((eq[i] >= k_CapA && eq[i] <= k_CapZ) || eq[i] == k_Varx ||
-                 eq[i] == k_Theta)
+        else if ((c >= k_CapA && c <= k_CapZ) || c == k_Varx || c == k_Theta)
         {
             if (canImpMultLast)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    EquationElement el = {
+                    Token el = {
                         operation,
                         ' ',
                         {0},
@@ -218,9 +219,9 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
             }
 
             char str[MAX_STRING_LEN] = {0};
-            getKeyStringKey(eq[i], str);
+            getKeyStringKey(c, str);
 
-            EquationElement el = {
+            Token el = {
                 variable,
                 str[0],
                 {0},
@@ -231,13 +232,13 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
         }
 
         // Constants
-        else if (eq[i] == k_Pi || eq[i] == k_CONSTeA)
+        else if (c == k_Pi || c == k_CONSTeA)
         {
             if (canImpMultLast)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    EquationElement el = {
+                    Token el = {
                         operation,
                         ' ',
                         {0},
@@ -248,10 +249,10 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 stack[++top] = k_Mul;
             }
 
-            EquationElement el = {
+            Token el = {
                 number,
                 ' ',
-                os_FloatToReal(eq[i] == k_Pi ? M_PI : M_E),
+                os_FloatToReal(c == k_Pi ? M_PI : M_E),
                 0
             };
 
@@ -260,13 +261,13 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
         }
 
         // If the scanned character is ‘(‘, push it to the stack.
-        else if (eq[i] == k_LParen)
+        else if (c == k_LParen)
         {
             if (canImpMultLast)
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    EquationElement el = {
+                    Token el = {
                         operation,
                         ' ',
                         {0},
@@ -282,11 +283,11 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
 
         // If the scanned character is ‘)’, pop and add to the output string
         // from the stack until an ‘(‘ is encountered.
-        else if (eq[i] == k_RParen)
+        else if (c == k_RParen)
         {
             while (top != -1 && stack[top] != k_LParen)
             {
-                EquationElement el = {
+                Token el = {
                     operation,
                     ' ',
                     {0},
@@ -302,14 +303,14 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
         // If an operator is scanned
         else
         {
-            int pr = prec(eq[i]);
+            int pr = prec(c);
             if (pr == -1) return -1;
 
             if (pr == 5 && canImpMultLast) // e.g. 5sin(x) is valid
             {
                 while (top != -1 && 3 <= prec(stack[top]))
                 {
-                    EquationElement el = {
+                    Token el = {
                         operation,
                         ' ',
                         {0},
@@ -322,7 +323,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
 
             while (top != -1 && pr <= prec(stack[top]))
             {
-                EquationElement el = {
+                Token el = {
                     operation,
                     ' ',
                     {0},
@@ -330,7 +331,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
                 };
                 (*result)[j++] = el;
             }
-            stack[++top] = eq[i];
+            stack[++top] = c;
             if (pr == 5) stack[++top] = k_LParen; // sin, cos, etc. has a '('
 
             canImpMultLast = false;
@@ -340,7 +341,7 @@ int parseToPostfix(uint16_t* eq, int len, Equation* result)
     // Pop all the remaining elements from the stack
     while (top != -1)
     {
-        EquationElement el = {
+        Token el = {
             operation,
             ' ',
             {0},
