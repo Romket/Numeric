@@ -158,6 +158,9 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
     {
         uint16_t c = in[i];
 
+        // If the scanned character is a separator, go to the next character
+        if (c == k_Space || c == k_Comma) continue;
+
         // If the scanned character is an operand, add it to the output string.
         if ((c >= k_0 && c <= k_9) || c == k_DecPnt)
         {
