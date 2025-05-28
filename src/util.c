@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ti/getkey.h"
 #include <util.h>
 
 #include <io/key.h>
@@ -31,8 +30,9 @@
 #include <io/symbols.h>
 
 #include <ti/getcsc.h>
-#include <ti/screen.h>
+#include <ti/getkey.h>
 #include <ti/real.h>
+#include <ti/screen.h>
 
 void startupScreen(void)
 {
@@ -178,4 +178,17 @@ bool strToNum(uint16_t* str, int len, double* result)
     *result *= negative ? -1.0 : 1.0;
 
     return true;
+}
+
+int strToInt(uint16_t* str, int len)
+{
+    int result = 0;
+
+    for (int i = 0; i < len; ++i)
+    {
+        result *= 10;
+        result += str[i] - k_0;
+    }
+
+    return result;
 }

@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ti/real.h"
 #include <util.h>
 
 int main(void)
@@ -57,6 +58,10 @@ int main(void)
         else if (postfix[i].Type == variable)
         {
             printChar(postfix[i].VarName);
+            if (postfix[i].Subscript != -1)
+            {
+                printIntAsSubscript(postfix[i].Subscript);
+            }
         }
         else
         {
@@ -66,11 +71,13 @@ int main(void)
         }
     }
     printChar('\n');
-    Variable vars[1] = {
-        {'X', os_Int24ToReal(2)}
+    Variable vars[3] = {
+        {'X', -1, os_Int24ToReal(2)},
+        {'X', 0, os_Int24ToReal(0)},
+        {'X', 10, os_FloatToReal(3.3)}
     };
 
-    real_t result = evaluate(postfix, postfixLen, &status, vars, 1);
+    real_t result = evaluate(postfix, postfixLen, &status, vars, 3);
     if (!status)
     {
         os_ClrHome();

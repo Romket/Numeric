@@ -50,6 +50,7 @@ enum Methods methodMenu(void);
 int drawMenu(const char* title, const char** options, int count);
 
 bool strToNum(uint16_t* str, int len, double* result);
+int strToInt(uint16_t* str, int len);
 
 #ifdef __cplusplus
 }

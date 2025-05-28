@@ -42,6 +42,7 @@ void printStr(const char* str);
 void printChar(const char val);
 
 void printInt(int val);
+void printIntAsSubscript(int val);
 
 void printReal(const real_t val);
 

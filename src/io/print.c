@@ -116,6 +116,26 @@ void printInt(int val)
     }
 }
 
+void printIntAsSubscript(int val)
+{
+    if (val == 0) printChar(SUB0);
+    else
+    {
+        char digits[20];
+        int i = 0;
+        while (val > 0)
+        {
+            digits[i++] = SUB0 + (val % 10);
+            val /= 10;
+        }
+
+        for (int j = i - 1; j >= 0; --j)
+        {
+            printChar(digits[j]);
+        }
+    }
+}
+
 void printReal(const real_t val)
 {
     char str[MAX_STRING_LEN] = {0};

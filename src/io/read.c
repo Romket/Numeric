@@ -77,6 +77,8 @@ int readString(uint16_t** result)
             memset(*result, 0, MAX_STRING_LEN * sizeof(uint16_t));
             i = 0;
         }
+        //! VERY TEMPORARY SOLUTION TO GETTING UNDERSCORES
+        else if (key == k_Math) key = k_Underscore;
 
         char str[SCREEN_WIDTH_CHARS] = {0};
         if ((length = getKeyStringKey(key, str)) != -1)

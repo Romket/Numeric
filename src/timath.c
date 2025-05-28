@@ -24,6 +24,7 @@
  */
 
 #include "ti/real.h"
+#include "ti/screen.h"
 #include <timath.h>
 
 #include <util.h>
@@ -46,7 +47,9 @@ real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
 
     for (int i = 0; i < len; ++i)
     {
-        switch (expr[i].Type)
+        Token tok = expr[i];
+
+        switch (tok.Type)
         {
             case number:
                 stack[top++] = expr[i].Number;
@@ -56,7 +59,8 @@ real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
                 bool found = false;
                 for (int j = 0; j < nVars; ++j)
                 {
-                    if (vars[j].Name == expr[i].VarName)
+                    if (vars[j].Name == tok.VarName &&
+                        vars[j].Subscript == tok.Subscript)
                     {
                         found = true;
                         stack[top++] = vars[j].Value;
@@ -75,7 +79,7 @@ real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
                 real_t second = stack[--top];
                 real_t first = stack[top - 1];
                 bool exStatus = true;
-                real_t result = ex(first, second, expr[i].Operation, &top,
+                real_t result = ex(first, second, tok.Operation, &top,
                                    &exStatus);
                 if (!exStatus)
                 {
@@ -164,6 +168,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     Token el = {
                         operation,
                         ' ',
+                        -1,
                         {0},
                         stack[top--]
                     };
@@ -183,15 +188,16 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
 
                 ++i;
                 ++k;
+                c = in[i];
             }
 
             char* end = &str[k - 1];
-            real_t num = os_StrToReal(str, &end);
 
             Token el = {
                 number,
                 ' ',
-                num,
+                -1,
+                os_StrToReal(str, &end),
                 0
             };
             (*result)[j++] = el;
@@ -210,6 +216,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     Token el = {
                         operation,
                         ' ',
+                        -1,
                         {0},
                         stack[top--]
                     };
@@ -218,12 +225,39 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 stack[++top] = k_Mul;
             }
 
-            char str[MAX_STRING_LEN] = {0};
-            getKeyStringKey(c, str);
+            char varName;
+            if (c >= k_CapA && c <= k_CapZ) varName = (c - k_CapA) + 'A';
+            else if (c == k_Varx) varName = 'X';
+            else if (c == k_Theta) varName = 't';
+
+            int subscript = -1;
+            if (i + 1 < len && in[i + 1] == k_Underscore)
+            {
+                i += 2;
+
+                uint16_t str[len];
+                int k = 0;
+                memset(str, 0, len);
+
+                c = in[i];
+                while (i < len && c >= k_0 && c <= k_9)
+                {
+                    str[k] = c;
+                    
+                    ++i;
+                    ++k;
+                    c = in[i];
+                }
+
+                subscript = strToInt(str, k);
+
+                --i;
+            } 
 
             Token el = {
                 variable,
-                str[0],
+                varName,
+                subscript,
                 {0},
                 0
             };
@@ -241,6 +275,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     Token el = {
                         operation,
                         ' ',
+                        -1,
                         {0},
                         stack[top--]
                     };
@@ -252,7 +287,9 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
             Token el = {
                 number,
                 ' ',
-                os_FloatToReal(c == k_Pi ? M_PI : M_E),
+                -1,
+                os_FloatToReal(c == k_Pi ? M_PI : M_E), // Only pi and e are
+                // currently supported constants
                 0
             };
 
@@ -270,6 +307,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     Token el = {
                         operation,
                         ' ',
+                        -1,
                         {0},
                         stack[top--]
                     };
@@ -290,6 +328,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 Token el = {
                     operation,
                     ' ',
+                    -1,
                     {0},
                     stack[top--]
                 };
@@ -313,6 +352,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     Token el = {
                         operation,
                         ' ',
+                        -1,
                         {0},
                         stack[top--]
                     };
@@ -326,6 +366,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 Token el = {
                     operation,
                     ' ',
+                    -1,
                     {0},
                     stack[top--]
                 };
@@ -344,6 +385,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
         Token el = {
             operation,
             ' ',
+            -1,
             {0},
             stack[top--]
         };
