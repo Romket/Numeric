@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "stdbool.h"
 #include <io/read.h>
 
 #include <io/iodefs.h>
