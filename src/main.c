@@ -23,75 +23,74 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ti/real.h"
 #include <util.h>
 
 int main(void)
 {
-    #include <ti/screen.h>
-    #include <io/read.h>
-    #include <stdlib.h>
-    #include <timath.h>
-    #include <io/print.h>
-    #include <ti/getkey.h>
-    #include <io/key.h>
-    #include <ti/getcsc.h>
-    os_ClrHome();
-    uint16_t* test = NULL;
-    int len = readString(&test);
-    Expression postfix = NULL;
-    int postfixLen = parseToPostfix(test, len, &postfix);
-    if (postfixLen == -1)
-    {
-        os_ClrHome();
-        printStr("Error in parsing to postfix");
-        while (!os_GetCSC());
-        return 1;
-    }
-    bool status;
-    for (int i = 0; i < postfixLen; ++i)
-    {
-        if (postfix[i].Type == number)
-        {
-            printReal(postfix[i].Number);
-        }
-        else if (postfix[i].Type == variable)
-        {
-            printChar(postfix[i].VarName);
-            if (postfix[i].Subscript != -1)
-            {
-                printIntAsSubscript(postfix[i].Subscript);
-            }
-        }
-        else
-        {
-            char str[MAX_STRING_LEN] = {0};
-            getKeyStringKey(postfix[i].Operation, str);
-            printStr(str);
-        }
-    }
-    printChar('\n');
-    Variable vars[3] = {
-        {'X', -1, os_Int24ToReal(2)},
-        {'X', 0, os_Int24ToReal(0)},
-        {'X', 10, os_FloatToReal(3.3)}
-    };
+    // #include <ti/screen.h>
+    // #include <io/read.h>
+    // #include <stdlib.h>
+    // #include <timath.h>
+    // #include <io/print.h>
+    // #include <ti/getkey.h>
+    // #include <io/key.h>
+    // #include <ti/getcsc.h>
+    // os_ClrHome();
+    // uint16_t* test = NULL;
+    // int len = readString(&test);
+    // Expression postfix = NULL;
+    // int postfixLen = parseToPostfix(test, len, &postfix);
+    // if (postfixLen == -1)
+    // {
+    //     os_ClrHome();
+    //     printStr("Error in parsing to postfix");
+    //     while (!os_GetCSC());
+    //     return 1;
+    // }
+    // bool status;
+    // for (int i = 0; i < postfixLen; ++i)
+    // {
+    //     if (postfix[i].Type == number)
+    //     {
+    //         printReal(postfix[i].Number);
+    //     }
+    //     else if (postfix[i].Type == variable)
+    //     {
+    //         printChar(postfix[i].VarName);
+    //         if (postfix[i].Subscript != -1)
+    //         {
+    //             printIntAsSubscript(postfix[i].Subscript);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         char str[MAX_STRING_LEN] = {0};
+    //         getKeyStringKey(postfix[i].Operation, str);
+    //         printStr(str);
+    //     }
+    // }
+    // printChar('\n');
+    // Variable vars[3] = {
+    //     {'X', -1, os_Int24ToReal(2)},
+    //     {'X', 0, os_Int24ToReal(0)},
+    //     {'X', 10, os_FloatToReal(3.3)}
+    // };
 
-    real_t result = evaluate(postfix, postfixLen, &status, vars, 3);
-    if (!status)
-    {
-        os_ClrHome();
-        printStr("Error in evaluating postfix expression\n");
-        while (!os_GetCSC());
-        return 1;
-    }
+    // real_t result = evaluate(postfix, postfixLen, &status, vars, 3);
+    // if (!status)
+    // {
+    //     os_ClrHome();
+    //     printStr("Error in evaluating postfix expression\n");
+    //     while (!os_GetCSC());
+    //     return 1;
+    // }
 
-    printReal(result);
+    // printReal(result);
 
-    while (!os_GetCSC());
-    // startupScreen();
-    // methodMenu();
-    free(test);
-    free(postfix);
+    // while (!os_GetCSC());
+    startupScreen();
+    methodMenu();
+    // free(test);
+    // free(postfix);
     return 0;
 }

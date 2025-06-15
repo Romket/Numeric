@@ -1,9 +1,9 @@
 /**
- * @file iodefs.h
+ * @file menu.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Basic definitions for a string
+ * @brief Declares functions for creating menus
  * @version 0.1
- * @date 2025-04-15
+ * @date 2025-05-28
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -23,24 +23,46 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#define MAX_STRING_LEN 256
+#include <stdbool.h>
 
-#define SCREEN_WIDTH_CHARS 26
-#define CLEAR_LINE "                          "
+typedef struct Tab
+{
+    const char* Name;
+    const char** Options;
+    int Count;
+} Tab;
 
-#define MAX_DIGITS 16
+typedef struct Selected
+{
+    int SelectedTab;
+    int SelectedOption;
+} Selected;
 
-#define X_OFFSET 1
-#define Y_OFFSET 39
-#define LINE_SPACING 20
-#define CHAR_SPACING 12
+typedef struct Menu
+{
+    const char* Title;
+    bool ShowTitle;
+    const Tab* Tabs;
+    int TabCount;
+} Menu;
+
+/**
+ * @brief Draws a menu
+ * 
+ * @param title The menu title
+ * @param tabs A list of tabs to display
+ * @param tabCount The number of Tabs
+ * @return Selected The index of the selected tab and option
+ *
+ * @note Tab name will not be displayed with only one tab
+ * @note Returns {-1, -1} if the user quits
+ */
+Selected drawMenu(const Menu* info);
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,7 @@
  * @file print.c
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
  * @brief Implements functions for printing
- * @version 0.3
+ * @version 0.4
  * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "io/iodefs.h"
 #include <io/print.h>
 
 #include <io/symbols.h>
@@ -31,6 +32,7 @@
 
 void printStr(const char* str)
 {
+    char lineBuffer[SCREEN_WIDTH_CHARS + 1] = {0};
     int lineBufferIndex = 0;
 
     unsigned int x, y;
@@ -62,6 +64,55 @@ void printStr(const char* str)
     os_PutStrLine(lineBuffer);
 
     if (lineBufferIndex == SCREEN_WIDTH_CHARS) isLineEnd = true;
+}
+
+void printInvStr(const char* str)
+{
+    os_SetDrawBGColor(0x000000);
+    os_SetDrawFGColor(0xFFFFFF);
+
+    char lineBuffer[SCREEN_WIDTH_CHARS + 1] = {0};
+    int lineBufferIndex = 0;
+
+    unsigned int x, y;
+    os_GetCursorPos(&y, &x);
+
+    if (isLineEnd && x == SCREEN_WIDTH_CHARS - 1) ++x;
+
+    for (int i = 0; i < MAX_STRING_LEN; ++i, ++lineBufferIndex)
+    {
+        // Ensure null termination by erasing any potentially existing data
+        lineBuffer[lineBufferIndex + 1] = 0;
+        if (str[i] == 0) break;
+        
+        if ((lineBufferIndex + x >= SCREEN_WIDTH_CHARS) || str[i] == '\n')
+        {
+            int col = (x * CHAR_SPACING) + X_OFFSET;
+            int row = (y * LINE_SPACING) + Y_OFFSET;
+            os_FontDrawText(lineBuffer, col, row);
+            os_NewLine();
+            
+            lineBufferIndex = 0;
+            lineBuffer[0] = 0;
+            lineBuffer[1] = 0;
+            
+            x = 0;
+            ++y;
+        }
+        
+        if (str[i] != '\n') lineBuffer[lineBufferIndex] = str[i];
+    }
+
+    int col = (x * CHAR_SPACING) + X_OFFSET;
+    int row = (y * LINE_SPACING) + Y_OFFSET;
+    os_FontDrawText(lineBuffer, col, row);
+
+    os_SetCursorPos(y, lineBufferIndex + x);
+
+    if (lineBufferIndex + x == SCREEN_WIDTH_CHARS) isLineEnd = true;
+    
+    os_SetDrawBGColor(0xFFFFFF);
+    os_SetDrawFGColor(0x000000);
 }
 
 void printChar(const char val)

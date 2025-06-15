@@ -33,7 +33,7 @@ extern "C"
 #include <stdbool.h>
 #include <stdint.h>
 
-enum Methods
+typedef enum Methods
 {
     mEuler,
     mImpEuler,
@@ -41,13 +41,11 @@ enum Methods
     mABM,
     mCustomRK,
     mQuit
-};
+} Methods;
 
-void startupScreen(void);
+void startupScreen();
 
-enum Methods methodMenu(void);
-
-int drawMenu(const char* title, const char** options, int count);
+Methods methodMenu();
 
 bool strToNum(uint16_t* str, int len, double* result);
 int strToInt(uint16_t* str, int len);

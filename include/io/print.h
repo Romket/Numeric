@@ -35,9 +35,9 @@ extern "C"
 #include <stdbool.h>
 
 // 26 characters and a null terminator
-static char lineBuffer[SCREEN_WIDTH_CHARS + 1] = {0};
 static bool isLineEnd = false;
 void printStr(const char* str);
+void printInvStr(const char* str);
 
 void printChar(const char val);
 

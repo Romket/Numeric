@@ -28,13 +28,14 @@
 #include <io/key.h>
 #include <io/print.h>
 #include <io/symbols.h>
+#include <menu.h>
 
 #include <ti/getcsc.h>
 #include <ti/getkey.h>
 #include <ti/real.h>
 #include <ti/screen.h>
 
-void startupScreen(void)
+void startupScreen()
 {
     os_ClrHome();
 
@@ -52,104 +53,69 @@ void startupScreen(void)
     while (!os_GetCSC());
 }
 
-enum Methods methodMenu(void)
+Methods methodMenu()
 {
-    #define METHODS_COUNT 6
-    const char* methods[METHODS_COUNT] =
-    {
+    const char* singleStep[] = {
         "Euler",
         "Improved Euler",
-        "RK4",
-        "AdamsBashforthMoulton",
-        "More",
-        "Quit"
+        "RK4"
     };
 
-    int choice = drawMenu("Main Menu", methods, METHODS_COUNT);
+    const char* multiStep[] = {
+        "Adams-Bashforth-Moulton"
+    };
 
-    enum Methods selectedMethod;
-    // Yes yes magic numbers bad, but lightweight
-    switch (choice)
+    const char* more[] = {
+        "Custom RK"
+    };
+
+    Tab tabs[3] = {
+        {"1-Step", singleStep, 3},
+        {"Multi-Step", multiStep, 1},
+        {"More", more, 1}
+    };
+
+    Menu menuInfo = {"Methods Menu", false, tabs, 3};
+
+    Selected choice = drawMenu(&menuInfo);
+
+    Methods selectedMethod;
+    if (choice.SelectedTab == 0)
     {
-        case 0:
-            selectedMethod = mEuler;
-            return selectedMethod;
-        case 1:
-            selectedMethod = mImpEuler;
-            return selectedMethod;
-        case 2:
-            selectedMethod = mRK4;
-            return selectedMethod;
-        case 3:
-            selectedMethod = mABM;
-            return selectedMethod;
-        case 4:
+        switch (choice.SelectedOption)
         {
-            #define MORE_MENU_COUNT 3
-            const char* more_menu[MORE_MENU_COUNT] =
-            {
-                "Custom RK",
-                "Back",
-                "Quit"
-            };
-
-            int more_choice = drawMenu("Main Menu", more_menu, MORE_MENU_COUNT);
-
-            switch (more_choice)
-            {
-                case 0:
-                    selectedMethod = mCustomRK;
-                    return selectedMethod;
-                case 1:
-                    return methodMenu();
-                default:
-                    selectedMethod = mQuit;
-                    return selectedMethod;
-            }
-        }
-        default:
-            selectedMethod = mQuit;
-            return selectedMethod;
-    }
-}
-
-int drawMenu(const char* title, const char** options, int count)
-{
-    int selected = 0;
-    sk_key_t key;
-
-    while (true)
-    {
-        os_ClrHome();
-        os_SetCursorPos(0, 0);
-        printStr(title);
-        printChar('\n');
-
-        for (int i = 0; i < count; ++i)
-        {
-            if (i == selected) { printChar(SEL); }
-            else { printChar(' '); }
-
-            char optionStr[4] = {0};
-            optionStr[0] = '1' + i;
-            optionStr[1] = ':';
-            optionStr[2] = ' ';
-            printStr(optionStr);
-            printStr(options[i]);
-            printChar('\n');
-        }
-
-        while (!(key = os_GetCSC()));
-
-        // Arrow key navigation
-        if (key == sk_Up) { selected = (selected - 1 + count) % count; }
-        else if (key == sk_Down) { selected = (selected + 1) % count; }
-        else if (key == sk_2nd || key == sk_Enter) { return selected; }
-        else if (getKeyNumberCSC(key) != -1 && getKeyNumberCSC(key) <= count)
-        {
-            return getKeyNumberCSC(key) - 1;
+            case 0:
+                selectedMethod = mEuler;
+                return selectedMethod;
+            case 1:
+                selectedMethod = mImpEuler;
+                return selectedMethod;
+            case 3:
+                selectedMethod = mRK4;
+                return selectedMethod;
         }
     }
+    else if (choice.SelectedTab == 1)
+    {
+        switch (choice.SelectedOption)
+        {
+            case 0:
+                selectedMethod = mABM;
+                return selectedMethod;
+        }
+    }
+    else if (choice.SelectedTab == 2)
+    {
+        switch (choice.SelectedOption)
+        {
+            case 0:
+                selectedMethod = mCustomRK;
+                return selectedMethod;
+        }
+    }
+
+    selectedMethod = mQuit;
+    return selectedMethod;
 }
 
 bool strToNum(uint16_t* str, int len, double* result)
