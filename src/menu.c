@@ -117,11 +117,15 @@ Selected drawMenu(const Menu* info)
         if (key == k_Right)
         {
             current.SelectedTab = (current.SelectedTab + 1) % info->TabCount;
+            current.SelectedOption = 0;
+            top = 0;
         }
         else if (key == k_Left)
         {
             current.SelectedTab =
                 (current.SelectedTab - 1 + info->TabCount) % info->TabCount;
+            current.SelectedOption = 0;
+            top = 0;
         }
         else if (key == k_Down)
         {
