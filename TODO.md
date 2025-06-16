@@ -10,7 +10,8 @@
 - [ ] Custom math menu
 
 ## Low Priority
+- [x] Scrolling in menus
 - [ ] More grouping symbols
 - [ ] Delete in input functions
 - [ ] Move cursor in input functions
-- [x] Scrolling in menus
+- [ ] Remove double pointers and malloc/calloc/realloc
