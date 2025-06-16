@@ -13,3 +13,4 @@
 - [ ] More grouping symbols
 - [ ] Delete in input functions
 - [ ] Move cursor in input functions
+- [x] Scrolling in menus

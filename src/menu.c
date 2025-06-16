@@ -23,6 +23,7 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "io/iodefs.h"
 #include <menu.h>
 
 #include <io/print.h>
@@ -35,6 +36,8 @@ Selected drawMenu(const Menu* info)
 {
     Selected current = {0, 0};
 
+    int top = 0;
+
     while (true)
     {
         os_ClrHome();
@@ -43,11 +46,27 @@ Selected drawMenu(const Menu* info)
             printStr(info->Title);
             os_NewLine();
         }
+
+        // while is used instead of if to handle the selected option wrapping
+        // down
+        while (current.SelectedOption >= top + SCREEN_HEIGHT_LINES -
+            (info->ShowTitle + (info->TabCount > 1)))
+        {
+            ++top;
+        }
+
+        while (current.SelectedOption < top)
+        {
+            --top;
+        }
         
         if (info->TabCount > 1)
         {
             for (int i = 0; i < info->TabCount; ++i)
             {
+                unsigned int x, y;
+                os_GetCursorPos(&y, &x);
+
                 if (i == current.SelectedTab)
                 {
                     printInvStr(info->Tabs[i].Name);
@@ -59,26 +78,38 @@ Selected drawMenu(const Menu* info)
 
                 printChar(' ');
             }
-
-            os_NewLine();
         }
 
         for (int i = 0; i < info->Tabs[current.SelectedTab].Count; ++i)
         {
+            if (i + info->ShowTitle + (info->TabCount > 1) >=
+                SCREEN_HEIGHT_LINES)
+            {
+                break;
+            }
+
+            os_NewLine();
+
             char num[3] = {0};
 
-            if (i <= 8) num[0] = i + 1 + '0';
-            else if (i == 9) num[0] = '0';
-            else if (i <= 35) num[0] = i - 10 + 'A';
+            if (i + top <= 8) num[0] = (i + top) + 1 + '0';
+            else if (i + top == 9) num[0] = '0';
+            else if (i + top <= 35) num[0] = (i + top) - 10 + 'A';
             else num[0] = ' ';
 
-            num[1] = ':';
+            if (i == 0 && top > 0) num[1] = UPLIGHT;
+            else if (i + info->ShowTitle + (info->TabCount > 1) + 1 ==
+                     SCREEN_HEIGHT_LINES && i + top <
+                        info->Tabs[current.SelectedTab].Count - 1)
+            {
+                num[1] = DOWNLIGHT;
+            }
+            else num[1] = ':';
 
-            if (i == current.SelectedOption) printInvStr(num);
+            if (i + top == current.SelectedOption) printInvStr(num);
             else printStr(num);
 
-            printStr(info->Tabs[current.SelectedTab].Options[i]);
-            os_NewLine();
+            printStr(info->Tabs[current.SelectedTab].Options[i + top]);
         }
 
         uint16_t key = os_GetKey();

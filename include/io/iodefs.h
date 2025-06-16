@@ -33,6 +33,8 @@ extern "C"
 #define MAX_STRING_LEN 256
 
 #define SCREEN_WIDTH_CHARS 26
+#define SCREEN_HEIGHT_LINES 10
+
 #define CLEAR_LINE "                          "
 
 #define MAX_DIGITS 16
