@@ -28,11 +28,12 @@
 #include <io/iodefs.h>
 #include <io/key.h>
 #include <io/print.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <mathmenu.h>
+
 #include <ti/getkey.h>
 #include <ti/screen.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 int readString(uint16_t** result)
@@ -76,8 +77,20 @@ int readString(uint16_t** result)
             memset(*result, 0, MAX_STRING_LEN * sizeof(uint16_t));
             i = 0;
         }
-        //! VERY TEMPORARY SOLUTION TO GETTING UNDERSCORES
-        else if (key == k_Math) key = k_Underscore;
+        else if (key == k_Math)
+        {
+            key = mathMenu();
+
+            os_EnableCursor();
+            os_ClrHome();
+
+            char str[SCREEN_WIDTH_CHARS] = {0};
+            for (int j = 0; j <= i; ++j)
+            {
+                getKeyStringKey((*result)[j], str);
+                printStr(str);
+            }
+        }
 
         char str[SCREEN_WIDTH_CHARS] = {0};
         if ((length = getKeyStringKey(key, str)) != -1)

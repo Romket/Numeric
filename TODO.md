@@ -6,8 +6,8 @@
 
 ## Medium Priority
 - [x] Variable subscripts
+- [x] Custom math menu
 - [ ] Degrees and detecting caclulator mode
-- [ ] Custom math menu
 
 ## Low Priority
 - [x] Scrolling in menus
