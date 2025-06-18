@@ -30,8 +30,8 @@ extern "C"
 {
 #endif
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
     
 // Returns -1 if the key is not a number
 int getKeyNumberCSC(uint8_t key);

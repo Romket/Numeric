@@ -25,13 +25,15 @@
 
 #pragma once
 
-#include "ti/real.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
 #include <io/iodefs.h>
+
+#include <ti/real.h>
+
 #include <stdbool.h>
 
 // 26 characters and a null terminator

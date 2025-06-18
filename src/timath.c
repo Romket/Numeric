@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ti/real.h"
 #include <timath.h>
 
 #include <util.h>

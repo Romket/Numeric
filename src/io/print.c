@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "io/iodefs.h"
 #include <io/print.h>
 
 #include <io/symbols.h>
