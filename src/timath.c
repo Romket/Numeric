@@ -23,12 +23,14 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ti/real.h"
 #include <timath.h>
 
 #include <util.h>
 #include <io/iodefs.h>
 #include <io/key.h>
 
+#include <ti/flags.h>
 #include <ti/getkey.h>
 
 #include <math.h>
@@ -100,21 +102,28 @@ real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
 
 real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status)
 {
+    real_t trigVal = second;
+    if (os_TestFlag(TRIG, DEGREES))
+    {
+        const real_t convToDegrees = os_FloatToReal(M_PI / 180.0);
+        trigVal = os_RealMul(&trigVal, &convToDegrees);
+    }
+
     switch (op)
     {
         // prec 5
-        case k_Sin:           return os_RealSinRad(&second);
+        case k_Sin:           return os_RealSinRad(&trigVal);
         case k_ASin:          return os_RealAsinRad(&second);
-        case k_Cos:           return os_RealCosRad(&second);
+        case k_Cos:           return os_RealCosRad(&trigVal);
         case k_ACos:          return os_RealAcosRad(&second);
-        case k_Tan:           return os_RealTanRad(&second);
+        case k_Tan:           return os_RealTanRad(&trigVal);
         case k_ATan:          return os_RealAtanRad(&second);
         case k_Sqrt:          return os_RealSqrt(&second);
         case k_Ln:            return os_RealLog(&second);
         // TODO: handle different log bases, different roots, etc.
-        case k_SinH:          return realSinhRad(&second);
-        case k_CosH:          return realCoshRad(&second);
-        case k_TanH:          return realTanhRad(&second);
+        case k_SinH:          return realSinhRad(&trigVal);
+        case k_CosH:          return realCoshRad(&trigVal);
+        case k_TanH:          return realTanhRad(&trigVal);
         case k_ASinH:         return realAsinhRad(&second);
         case k_ACosH:         return realAcoshRad(&second);
         case k_ATanH:         return realAtanhRad(&second);
