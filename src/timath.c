@@ -148,6 +148,7 @@ real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status)
     }
 }
 
+// TODO: Split out functions for character types for readability and repetition
 int parseToPostfix(uint16_t* in, int len, Expression* result)
 {
     if (*result != NULL) free(*result);
@@ -159,6 +160,8 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
     int top = -1;
 
     bool canImpMultLast = false;
+
+    int unmatchedLParens = 0;
 
     for (int i = 0; i < len; ++i)
     {
@@ -326,6 +329,8 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
             }
             stack[++top] = k_LParen;
             canImpMultLast = false;
+
+            ++unmatchedLParens;
         }
 
         // If the scanned character is ‘)’, pop and add to the output string
@@ -346,6 +351,8 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
             top--;
 
             canImpMultLast = true;
+
+            --unmatchedLParens;
         }
 
         // If an operator is scanned
@@ -382,10 +389,37 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 (*result)[j++] = el;
             }
             stack[++top] = c;
-            if (pr == 5) stack[++top] = k_LParen; // sin, cos, etc. has a '('
+            if (pr == 5)
+            {
+                // sin, cos, etc. has a '('
+                stack[++top] = k_LParen;
+                ++unmatchedLParens;
+            }
 
             canImpMultLast = false;
         }
+    }
+    
+    // Close all unclosed parentheses
+    if (unmatchedLParens < 0) return -1;
+    while (unmatchedLParens > 0)
+    {
+        while (top != -1 && stack[top] != k_LParen)
+        {
+            Token el = {
+                operation,
+                ' ',
+                -1,
+                {0},
+                stack[top--]
+            };
+            (*result)[j++] = el;
+        }
+        top--;
+
+        canImpMultLast = true;
+
+        --unmatchedLParens;
     }
 
     // Pop all the remaining elements from the stack
