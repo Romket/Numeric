@@ -33,14 +33,12 @@
 #include <ti/getkey.h>
 #include <ti/screen.h>
 
-#include <stdlib.h>
 #include <string.h>
 
-int readString(uint16_t** result)
+uint16_t* readString(int* len)
 {
-    if (*result != NULL) free(*result);
-    *result = calloc(MAX_STRING_LEN, sizeof(uint16_t));
-    
+    static uint16_t result[MAX_STRING_LEN];
+
     uint16_t key;
 
     os_EnableCursor();
@@ -50,8 +48,7 @@ int readString(uint16_t** result)
 
     unsigned int lengths[MAX_STRING_LEN] = {0};
 
-    int i = 0;
-    for (i = 0; i < MAX_STRING_LEN; ++i)
+    for (*len = 0; *len < MAX_STRING_LEN; ++*len)
     {
         key = os_GetKey();
         if (key == k_Enter) break;
@@ -76,9 +73,9 @@ int readString(uint16_t** result)
             os_SetCursorPos(y, x);
 
             // Reset result and lengths array
-            memset(*result, 0, MAX_STRING_LEN * sizeof(uint16_t));
+            memset(result, 0, MAX_STRING_LEN * sizeof(uint16_t));
             memset(lengths, 0, MAX_STRING_LEN * sizeof(unsigned int));
-            i = 0;
+            *len = 0;
         }
         else if (key == k_Math)
         {
@@ -88,44 +85,44 @@ int readString(uint16_t** result)
             os_ClrHome();
 
             char str[SCREEN_WIDTH_CHARS] = {0};
-            for (int j = 0; j <= i; ++j)
+            for (int j = 0; j <= *len; ++j)
             {
-                getKeyStringKey((*result)[j], str);
+                getKeyStringKey(result[j], str);
                 printStr(str);
             }
         }
-        else if (key == k_Del && i > 0)
+        else if (key == k_Del && *len > 0)
         {
             os_DisableCursor();
 
             unsigned int curY, curX, targetX, targetY;
             os_GetCursorPos(&curY, &curX);
 
-            --i;
+            --*len;
 
-            if (curX < lengths[i])
+            if (curX < lengths[*len])
             {
-                targetX = SCREEN_WIDTH_CHARS - (lengths[i] - curX);
+                targetX = SCREEN_WIDTH_CHARS - (lengths[*len] - curX);
                 targetY = curY - 1;
             }
             else
             {
-                targetX = curX - lengths[i];
+                targetX = curX - lengths[*len];
                 targetY = curY;
             }
 
             os_SetCursorPos(targetY, targetX);
-            for (unsigned int j = 0; j <= lengths[i]; ++j)
+            for (unsigned int j = 0; j <= lengths[*len]; ++j)
             {
                 printChar(' ');
             }
             os_SetCursorPos(targetY, targetX);
 
-            (*result)[i] = 0;
-            lengths[i] = 0;
+            result[*len] = 0;
+            lengths[*len] = 0;
 
             // decrement again to get the correct index in next loop iteration
-            --i;
+            --*len;
 
             os_EnableCursor();
         }
@@ -134,8 +131,8 @@ int readString(uint16_t** result)
         int length = getKeyStringKey(key, str);
         if (length != -1)
         {
-            lengths[i] = length;
-            (*result)[i] = key;
+            lengths[*len] = length;
+            result[*len] = key;
             printStr(str);
         }
     }
@@ -149,5 +146,5 @@ int readString(uint16_t** result)
     // TODO: check if clearing the dot goes to a newline on its own
     os_NewLine();
 
-    return i;
+    return result;
 }

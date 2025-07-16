@@ -12,7 +12,7 @@
 ## Low Priority
 - [x] Scrolling in menus
 - [x] Delete in input functions
+- [x] Remove double pointers and malloc/calloc/realloc
 - [ ] More grouping symbols
 - [ ] Move cursor in input functions
-- [ ] Remove double pointers and malloc/calloc/realloc
 - [ ] Make things const

@@ -150,7 +150,7 @@ real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status)
 // TODO: Split out functions for character types for readability and repetition
 Expression parseToPostfix(uint16_t* in, int len)
 {
-    Expression result;
+    static Expression result;
     result.Length = 0;
 
     uint16_t stack[len];

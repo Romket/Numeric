@@ -29,15 +29,14 @@ int main(void)
 {
     #include <ti/screen.h>
     #include <io/read.h>
-    #include <stdlib.h>
     #include <timath.h>
     #include <io/print.h>
     #include <ti/getkey.h>
     #include <io/key.h>
     #include <ti/getcsc.h>
     os_ClrHome();
-    uint16_t* test = NULL;
-    int len = readString(&test);
+    int len = 0;
+    uint16_t* test = readString(&len);
 
     Expression postfix = parseToPostfix(test, len);
     if (postfix.Length == -1)
@@ -90,6 +89,5 @@ int main(void)
     while (!os_GetCSC());
     // startupScreen();
     // methodMenu();
-    free(test);
     return 0;
 }
