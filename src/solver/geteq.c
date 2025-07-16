@@ -1,8 +1,8 @@
 /**
- * @file print.h
+ * @file geteq.c
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Defines functions for printing
- * @version 0.3
+ * @brief Defines functions to get the equations to solve from the user
+ * @version 0.1
  * @date 2025-04-15
  * 
  * @copyright Copyright (c) 2025 Luke Houston
@@ -23,27 +23,12 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <solver/geteq.h>
 
-#ifdef __cplusplus
-extern "C"
+#include <ti/screen.h>
+
+DiffEq getEquation()
 {
-#endif
-
-#include <io/iodefs.h>
-
-#include <ti/real.h>
-
-void printStr(const char* str);
-void printInvStr(const char* str);
-
-void printChar(const char val);
-
-void printInt(int val);
-void printIntAsSubscript(int val);
-
-void printReal(const real_t val);
-
-#ifdef __cplusplus
+    os_ClrHome();
+    
 }
-#endif

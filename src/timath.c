@@ -33,10 +33,9 @@
 #include <ti/getkey.h>
 
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
 
-real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
+real_t evaluate(Expression* expr, bool* status, Variable* vars,
                 int nVars)
 {
     real_t stack[MAX_STRING_LEN] = {{0}};
@@ -44,14 +43,14 @@ real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
 
     *status = true;
 
-    for (int i = 0; i < len; ++i)
+    for (int i = 0; i < expr->Length; ++i)
     {
-        Token tok = expr[i];
+        Token tok = expr->Tokens[i];
 
         switch (tok.Type)
         {
             case number:
-                stack[top++] = expr[i].Number;
+                stack[top++] = tok.Number;
                 break;
             case variable:
             {
@@ -149,14 +148,12 @@ real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status)
 }
 
 // TODO: Split out functions for character types for readability and repetition
-int parseToPostfix(uint16_t* in, int len, Expression* result)
+Expression parseToPostfix(uint16_t* in, int len)
 {
-    if (*result != NULL) free(*result);
-    *result = malloc((len + 1) * sizeof(uint16_t));
-    if (*result == NULL) return -1;
+    Expression result;
+    result.Length = 0;
 
     uint16_t stack[len];
-    int j = 0;
     int top = -1;
 
     bool canImpMultLast = false;
@@ -184,7 +181,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                         {0},
                         stack[top--]
                     };
-                    (*result)[j++] = el;
+                    result.Tokens[result.Length++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -212,7 +209,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 os_StrToReal(str, &end),
                 0
             };
-            (*result)[j++] = el;
+            result.Tokens[result.Length++] = el;
             canImpMultLast = true;
 
             --i;
@@ -232,7 +229,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                         {0},
                         stack[top--]
                     };
-                    (*result)[j++] = el;
+                    result.Tokens[result.Length++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -273,7 +270,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 {0},
                 0
             };
-            (*result)[j++] = el;
+            result.Tokens[result.Length++] = el;
             canImpMultLast = true;
         }
 
@@ -291,7 +288,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                         {0},
                         stack[top--]
                     };
-                    (*result)[j++] = el;
+                    result.Tokens[result.Length++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -305,7 +302,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 0
             };
 
-            (*result)[j++] = el;
+            result.Tokens[result.Length++] = el;
             canImpMultLast = true;
         }
 
@@ -323,7 +320,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                         {0},
                         stack[top--]
                     };
-                    (*result)[j++] = el;
+                    result.Tokens[result.Length++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -346,7 +343,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     {0},
                     stack[top--]
                 };
-                (*result)[j++] = el;
+                result.Tokens[result.Length++] = el;
             }
             top--;
 
@@ -359,7 +356,11 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
         else
         {
             int pr = prec(c);
-            if (pr == -1) return -1;
+            if (pr == -1)
+            {
+                result.Length = -1;
+                return result;
+            }
 
             if (pr == 5 && canImpMultLast) // e.g. 5sin(x) is valid
             {
@@ -372,7 +373,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                         {0},
                         stack[top--]
                     };
-                    (*result)[j++] = el;
+                    result.Tokens[result.Length++] = el;
                 }
                 stack[++top] = k_Mul;
             }
@@ -386,7 +387,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                     {0},
                     stack[top--]
                 };
-                (*result)[j++] = el;
+                result.Tokens[result.Length++] = el;
             }
             stack[++top] = c;
             if (pr == 5)
@@ -401,7 +402,12 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
     }
     
     // Close all unclosed parentheses
-    if (unmatchedLParens < 0) return -1;
+    if (unmatchedLParens < 0)
+    {
+        result.Length = -1;
+        return result;
+    }
+
     while (unmatchedLParens > 0)
     {
         while (top != -1 && stack[top] != k_LParen)
@@ -413,7 +419,7 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
                 {0},
                 stack[top--]
             };
-            (*result)[j++] = el;
+            result.Tokens[result.Length++] = el;
         }
         top--;
 
@@ -432,10 +438,10 @@ int parseToPostfix(uint16_t* in, int len, Expression* result)
             {0},
             stack[top--]
         };
-        (*result)[j++] = el;
+        result.Tokens[result.Length++] = el;
     }
 
-    return j;
+    return result;
 }
 
 int prec(uint16_t c)

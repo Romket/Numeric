@@ -1,9 +1,9 @@
 /**
- * @file geteq.c
+ * @file equation.h
  * @author Luke Houston (Romket) (lukehouston08@gmail.com)
- * @brief Defines functions to get the equations to solve from the user
+ * @brief Solver functions and associated data structures
  * @version 0.1
- * @date 2025-04-15
+ * @date 2025-07-14
  * 
  * @copyright Copyright (c) 2025 Luke Houston
  *
@@ -23,12 +23,41 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <geteq.h>
+#pragma once
 
-#include <ti/screen.h>
-
-struct Equation getEquation(void)
+#ifdef __cplusplus
+extern "C"
 {
-    os_ClrHome();
-    
+#endif
+
+#include <timath.h>
+
+#include <stdbool.h>
+
+typedef enum Equality
+{
+    equal,
+    notEqual,
+    greater,
+    greaterEq,
+    less,
+    lessEq
+} Equality;
+
+// Read as `Var Relation Exp`
+typedef struct Equation
+{
+    Variable* Var; // Variables are stored as pointers to a central list
+    Expression Exp;
+    Equality Relation;
+} Equation;
+
+// Returns false if `eq.Relation != eq` or if `eq.Exp` fails to evaluate
+bool evalEq(Equation* eq);
+
+// Returns the size of `vars` or `-1` if `solverId` is invalid
+int getVars(int solverId, Variable* vars);
+
+#ifdef __cplusplus
 }
+#endif

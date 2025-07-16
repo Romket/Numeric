@@ -32,6 +32,8 @@ extern "C"
 
 #include <ti/real.h>
 
+#include <io/iodefs.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -50,7 +52,12 @@ typedef struct Token
     real_t Number;
     uint16_t Operation;
 } Token;
-typedef Token* Expression;
+
+typedef struct Expression
+{
+    Token Tokens[MAX_STRING_LEN];
+    int Length;
+} Expression;
 
 typedef struct Variable
 {
@@ -59,11 +66,10 @@ typedef struct Variable
     real_t Value;
 } Variable;
 
-int parseToPostfix(uint16_t* in, int len, Expression* result);
+Expression parseToPostfix(uint16_t* in, int len);
 int prec(uint16_t el);
 
-real_t evaluate(Expression expr, int len, bool* status, Variable* vars,
-                int nVars);
+real_t evaluate(Expression* expr, bool* status, Variable* vars, int nVars);
 
 real_t ex(real_t first, real_t second, uint16_t op, int* top, bool* status);
 

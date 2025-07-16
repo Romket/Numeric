@@ -38,9 +38,9 @@ int main(void)
     os_ClrHome();
     uint16_t* test = NULL;
     int len = readString(&test);
-    Expression postfix = NULL;
-    int postfixLen = parseToPostfix(test, len, &postfix);
-    if (postfixLen == -1)
+
+    Expression postfix = parseToPostfix(test, len);
+    if (postfix.Length == -1)
     {
         os_ClrHome();
         printStr("Error in parsing to postfix");
@@ -48,24 +48,24 @@ int main(void)
         return 1;
     }
     bool status;
-    for (int i = 0; i < postfixLen; ++i)
+    for (int i = 0; i < postfix.Length; ++i)
     {
-        if (postfix[i].Type == number)
+        if (postfix.Tokens[i].Type == number)
         {
-            printReal(postfix[i].Number);
+            printReal(postfix.Tokens[i].Number);
         }
-        else if (postfix[i].Type == variable)
+        else if (postfix.Tokens[i].Type == variable)
         {
-            printChar(postfix[i].VarName);
-            if (postfix[i].Subscript != -1)
+            printChar(postfix.Tokens[i].VarName);
+            if (postfix.Tokens[i].Subscript != -1)
             {
-                printIntAsSubscript(postfix[i].Subscript);
+                printIntAsSubscript(postfix.Tokens[i].Subscript);
             }
         }
         else
         {
             char str[MAX_STRING_LEN] = {0};
-            getKeyStringKey(postfix[i].Operation, str);
+            getKeyStringKey(postfix.Tokens[i].Operation, str);
             printStr(str);
         }
     }
@@ -76,7 +76,7 @@ int main(void)
         {'X', 10, os_FloatToReal(3.3)}
     };
 
-    real_t result = evaluate(postfix, postfixLen, &status, vars, 3);
+    real_t result = evaluate(&postfix, &status, vars, 3);
     if (!status)
     {
         os_ClrHome();
@@ -91,6 +91,5 @@ int main(void)
     // startupScreen();
     // methodMenu();
     free(test);
-    free(postfix);
     return 0;
 }

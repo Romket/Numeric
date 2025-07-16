@@ -30,14 +30,16 @@ extern "C"
 {
 #endif
 
-struct Equation
-{
-    int order;
-    int systemSize;
-    char** equations;
-};
+#include <solver/equation.h>
 
-struct Equation getEquation(void);
+typedef struct DiffEq
+{
+    int Order;
+    int SystemSize;
+    Equation* Equations;
+} DiffEq;
+
+DiffEq getEquation();
 
 #ifdef __cplusplus
 }

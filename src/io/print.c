@@ -29,6 +29,9 @@
 
 #include <ti/screen.h>
 
+// I don't like it but at least it's not global
+static bool isLineEnd = false;
+
 void printStr(const char* str)
 {
     char lineBuffer[SCREEN_WIDTH_CHARS + 1] = {0};
