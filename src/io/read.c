@@ -48,7 +48,7 @@ uint16_t* readString(int* len)
 
     unsigned int lengths[MAX_STRING_LEN] = {0};
 
-    for (*len = 0; *len < MAX_STRING_LEN; ++*len)
+    for (int i = 0; *len < MAX_STRING_LEN; ++i, ++*len)
     {
         key = os_GetKey();
         if (key == k_Enter) break;
@@ -75,6 +75,7 @@ uint16_t* readString(int* len)
             // Reset result and lengths array
             memset(result, 0, MAX_STRING_LEN * sizeof(uint16_t));
             memset(lengths, 0, MAX_STRING_LEN * sizeof(unsigned int));
+            i = 0;
             *len = 0;
         }
         else if (key == k_Math)
@@ -95,45 +96,73 @@ uint16_t* readString(int* len)
         {
             os_DisableCursor();
 
-            unsigned int curY, curX, targetX, targetY;
-            os_GetCursorPos(&curY, &curX);
-
+            --i;
             --*len;
 
-            if (curX < lengths[*len])
-            {
-                targetX = SCREEN_WIDTH_CHARS - (lengths[*len] - curX);
-                targetY = curY - 1;
-            }
-            else
-            {
-                targetX = curX - lengths[*len];
-                targetY = curY;
-            }
+            TargetCursorPos target = getTargetPos(lengths, i);
 
-            os_SetCursorPos(targetY, targetX);
-            for (unsigned int j = 0; j <= lengths[*len]; ++j)
+            // Less than or equal to needed to clear trailing cursor dot
+            os_SetCursorPos(target.y, target.x);
+            for (unsigned int j = 0; j <= lengths[i]; ++j)
             {
                 printChar(' ');
             }
-            os_SetCursorPos(targetY, targetX);
+            os_SetCursorPos(target.y, target.x);
 
             result[*len] = 0;
             lengths[*len] = 0;
 
             // decrement again to get the correct index in next loop iteration
+            --i;
             --*len;
 
             os_EnableCursor();
+        }
+        else if (key == k_Left)
+        {
+            if (i <= 0) continue;
+
+            i--;
+
+            TargetCursorPos target = getTargetPos(lengths, i);
+            os_SetCursorPos(target.y, target.x);
+        }
+        else if (key == k_Right)
+        {
+            if (i >= *len) continue;
+
+            i++;
+
+            TargetCursorPos target = getTargetPos(lengths, i);
+            os_SetCursorPos(target.y, target.x);
         }
 
         char str[SCREEN_WIDTH_CHARS] = {0};
         int length = getKeyStringKey(key, str);
         if (length != -1)
         {
-            lengths[*len] = length;
-            result[*len] = key;
-            printStr(str);
+            lengths[i] = length;
+            result[i] = key;
+            
+            if (i == *len || lengths[i] == length)
+            {
+                printStr(str);
+                continue;
+            }
+
+            unsigned int curX, curY;
+            os_GetCursorPos(&curY, &curX);
+            for (int j = i; j <= *len; ++j)
+            {
+                char str[SCREEN_WIDTH_CHARS] = {0};
+                getKeyStringKey(result[j], str);
+                printStr(str);
+            }
+
+            if (lengths[i] > length)
+                for (int j = 0; j < lengths[i] - length; ++j) printChar(' ');
+
+            os_SetCursorPos(curY, curX);
         }
     }
 
@@ -145,6 +174,27 @@ uint16_t* readString(int* len)
 
     // TODO: check if clearing the dot goes to a newline on its own
     os_NewLine();
+
+    return result;
+}
+
+TargetCursorPos getTargetPos(unsigned int lengths[MAX_STRING_LEN], int i)
+{
+    TargetCursorPos result;
+
+    unsigned int curX, curY;
+    os_GetCursorPos(&curY, &curX);
+
+    if (curX < lengths[i])
+    {
+        result.x = SCREEN_WIDTH_CHARS - (lengths[i] - curX);
+        result.y = curY - 1;
+    }
+    else
+    {
+        result.x = curX - lengths[i];
+        result.y = curY;
+    }
 
     return result;
 }

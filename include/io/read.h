@@ -30,9 +30,19 @@ extern "C"
 {
 #endif
 
+#include "iodefs.h"
+
 #include <stdint.h>
 
+typedef struct TargetCursorPos
+{
+    unsigned int x;
+    unsigned int y;
+} TargetCursorPos;
+
 uint16_t* readString(int* len);
+
+TargetCursorPos getTargetPos(unsigned int lengths[MAX_STRING_LEN], int i);
 
 #ifdef __cplusplus
 }
