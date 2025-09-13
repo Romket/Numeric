@@ -23,11 +23,13 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "stdbool.h"
 #include <io/read.h>
 
 #include <io/iodefs.h>
 #include <io/key.h>
 #include <io/print.h>
+#include <io/symbols.h>
 #include <mathmenu.h>
 
 #include <ti/getkey.h>
@@ -197,4 +199,212 @@ TargetCursorPos getTargetPos(unsigned int lengths[MAX_STRING_LEN], int i)
     }
 
     return result;
+}
+
+int readInt()
+{
+    int result = 0;
+    bool negative = false;
+
+    uint16_t key;
+
+    os_EnableCursor();
+
+    unsigned int x, y;
+    os_GetCursorPos(&y, &x);
+
+    for (int i = 0; i < MAX_STRING_LEN; ++i)
+    {
+        key = os_GetKey();
+        if (key == k_Enter) break;
+        else if (key == k_Clear)
+        {
+            unsigned int curX, curY;
+
+            // Clear newlines
+            os_GetCursorPos(&curY, &curX);
+            while (curY > y)
+            {
+                os_SetCursorPos(curY, 0);
+                printStr(CLEAR_LINE);
+                --curY;
+            }
+
+            // Clear original line
+            os_SetCursorPos(y, x);
+            for (curX = x; curX < SCREEN_WIDTH_CHARS; ++curX) printChar(' ');
+
+            // Reset cursor position
+            os_SetCursorPos(y, x);
+
+            result = 0;
+            i = 0;
+            negative = false;
+        }
+        else if (key == k_Del && i > 0)
+        {
+            os_DisableCursor();
+
+            unsigned int curY, curX, targetX, targetY;
+            os_GetCursorPos(&curY, &curX);
+
+            --i;
+
+            targetX = (curX == 0 ? SCREEN_WIDTH_CHARS : curX) - 1;
+            targetY = curY - curX == 0;
+
+            os_SetCursorPos(targetY, targetX);
+            printChar(' ');
+            os_SetCursorPos(targetY, targetX);
+
+            if (i == 0) negative = false;
+            result /= 10;
+
+            // decrement again to get the correct index in next loop iteration
+            --i;
+
+            os_EnableCursor();
+        }
+
+        if (key >= k_0 && key <= k_9)
+        {
+            result *= 10;
+            result += key - k_0;
+            printChar((key - k_0) + '0');
+        }
+        else if (key == k_Chs && i == 0)
+        {
+            negative = true;
+            printChar(CHS);
+        }
+    }
+
+    os_DisableCursor();
+
+    char clearCursorDot[2] = {0};
+    clearCursorDot[0] = ' ';
+    os_PutStrLine(clearCursorDot);
+
+    // TODO: check if clearing the dot goes to a newline on its own
+    os_NewLine();
+
+    return result * (negative ? -1 : 1);
+}
+
+float readFloat()
+{
+    float result = 0.0;
+    bool negative = false;
+    int place = -1;
+    int lastDigit = 0;
+
+    uint16_t key;
+
+    os_EnableCursor();
+
+    unsigned int x, y;
+    os_GetCursorPos(&y, &x);
+
+    for (int i = 0; i < MAX_STRING_LEN; ++i)
+    {
+        key = os_GetKey();
+        if (key == k_Enter) break;
+        else if (key == k_Clear)
+        {
+            unsigned int curX, curY;
+
+            // Clear newlines
+            os_GetCursorPos(&curY, &curX);
+            while (curY > y)
+            {
+                os_SetCursorPos(curY, 0);
+                printStr(CLEAR_LINE);
+                --curY;
+            }
+
+            // Clear original line
+            os_SetCursorPos(y, x);
+            for (curX = x; curX < SCREEN_WIDTH_CHARS; ++curX) printChar(' ');
+
+            // Reset cursor position
+            os_SetCursorPos(y, x);
+
+            result = 0;
+            i = 0;
+            negative = false;
+            place = -1;
+        }
+        else if (key == k_Del && i > 0)
+        {
+            os_DisableCursor();
+
+            unsigned int curY, curX, targetX, targetY;
+            os_GetCursorPos(&curY, &curX);
+
+            --i;
+
+            targetX = (curX == 0 ? SCREEN_WIDTH_CHARS : curX) - 1;
+            targetY = curY - curX == 0;
+
+            os_SetCursorPos(targetY, targetX);
+            printChar(' ');
+            os_SetCursorPos(targetY, targetX);
+
+            if (i == 0) negative = false;
+
+            if (place == -1) result = (int)result / 10;
+            if (place == 0) place = -1;
+            else
+            {
+                float lastNum = (float)lastDigit;
+                for (int i = 0; i < place; ++i) lastNum /= 10.0;
+                result -= lastNum;
+
+                --place;
+            }
+
+            // decrement again to get the correct index in next loop iteration
+            --i;
+
+            os_EnableCursor();
+        }
+
+        if (key >= k_0 && key <= k_9)
+        {
+            if (place == -1)
+            {
+                result *= 10;
+                result += key - k_0;
+            }
+            else
+            {
+                float num = key - k_0;
+                for (int i = 0; i < place; ++i) num /= 10.0;
+                result += num;
+                ++place;
+            }
+            printChar((key - k_0) + '0');
+        }
+        else if (key == k_Chs && i == 0)
+        {
+            negative = true;
+            printChar(CHS);
+        }
+        else if (key == k_DecPnt && place == -1)
+        {
+            place = 0;
+            printChar('.');
+        }
+    }
+
+    os_DisableCursor();
+
+    char clearCursorDot[2] = {0};
+    clearCursorDot[0] = ' ';
+    os_PutStrLine(clearCursorDot);
+
+    // TODO: check if clearing the dot goes to a newline on its own
+    os_NewLine();
+
+    return result * (negative ? -1 : 1);
 }

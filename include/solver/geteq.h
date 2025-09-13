@@ -30,16 +30,44 @@ extern "C"
 {
 #endif
 
-#include <solver/equation.h>
+#include <timath.h>
+
+#define MAX_SYSTEM_SIZE 10
+#define MAX_ORDER 9
+
+typedef enum Equality
+{
+    equal,
+    notEqual,
+    greater,
+    greaterEq,
+    less,
+    lessEq
+} Equality;
+
+// Read as `Var Relation Exp`
+typedef struct Equation
+{
+    Variable Var;
+    Variable* VarList;
+    int NVars;
+    Expression Exp;
+    Equality Relation;
+} Equation;
 
 typedef struct DiffEq
 {
-    int Order;
     int SystemSize;
+    int* Orders;
     Equation* Equations;
 } DiffEq;
 
-DiffEq getEquation();
+DiffEq getDiffEq(bool* status);
+
+bool getEquation(DiffEq* de, int eqId, bool system);
+
+// Returns false if `eq->Relation != equal` or if `eq->Exp` fails to evaluate
+bool evalEq(Equation* eq);
 
 #ifdef __cplusplus
 }

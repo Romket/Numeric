@@ -178,6 +178,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                         operation,
                         ' ',
                         -1,
+                        0,
                         {0},
                         stack[top--]
                     };
@@ -206,6 +207,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                 number,
                 ' ',
                 -1,
+                0,
                 os_StrToReal(str, &end),
                 0
             };
@@ -226,6 +228,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                         operation,
                         ' ',
                         -1,
+                        0,
                         {0},
                         stack[top--]
                     };
@@ -261,12 +264,20 @@ Expression parseToPostfix(uint16_t* in, int len)
                 subscript = strToInt(str, k);
 
                 --i;
-            } 
+            }
+
+            int deriv = 0;
+            while (++i < len && in[i + 1] == k_Quote)
+            {
+                ++deriv;
+            }
+            --i;
 
             Token el = {
                 variable,
                 varName,
                 subscript,
+                deriv,
                 {0},
                 0
             };
@@ -285,6 +296,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                         operation,
                         ' ',
                         -1,
+                        0,
                         {0},
                         stack[top--]
                     };
@@ -297,6 +309,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                 number,
                 ' ',
                 -1,
+                0,
                 os_FloatToReal(c == k_Pi ? M_PI : M_E), // Only pi and e are
                 // currently supported constants
                 0
@@ -317,6 +330,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                         operation,
                         ' ',
                         -1,
+                        0,
                         {0},
                         stack[top--]
                     };
@@ -340,6 +354,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                     operation,
                     ' ',
                     -1,
+                    0,
                     {0},
                     stack[top--]
                 };
@@ -370,6 +385,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                         operation,
                         ' ',
                         -1,
+                        0,
                         {0},
                         stack[top--]
                     };
@@ -384,6 +400,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                     operation,
                     ' ',
                     -1,
+                    0,
                     {0},
                     stack[top--]
                 };
@@ -416,6 +433,7 @@ Expression parseToPostfix(uint16_t* in, int len)
                 operation,
                 ' ',
                 -1,
+                0,
                 {0},
                 stack[top--]
             };
@@ -435,6 +453,7 @@ Expression parseToPostfix(uint16_t* in, int len)
             operation,
             ' ',
             -1,
+            0,
             {0},
             stack[top--]
         };

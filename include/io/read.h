@@ -44,6 +44,10 @@ uint16_t* readString(int* len);
 
 TargetCursorPos getTargetPos(unsigned int lengths[MAX_STRING_LEN], int i);
 
+int readInt();
+
+float readFloat();
+
 #ifdef __cplusplus
 }
 #endif

@@ -49,6 +49,7 @@ typedef struct Token
     TokenType Type;
     char VarName;
     int Subscript;
+    int Deriv;
     real_t Number;
     uint16_t Operation;
 } Token;
@@ -63,6 +64,7 @@ typedef struct Variable
 {
     char Name;
     int Subscript; // -1 for no suscript
+    int Deriv;
     real_t Value;
 } Variable;
 
