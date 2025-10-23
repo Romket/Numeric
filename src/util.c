@@ -30,6 +30,11 @@
 #include <io/symbols.h>
 #include <menu.h>
 
+#include <solver/methods/abm.h>
+#include <solver/methods/euler.h>
+#include <solver/methods/improved_euler.h>
+#include <solver/methods/rk4.h>
+
 #include <ti/getcsc.h>
 #include <ti/getkey.h>
 #include <ti/real.h>
@@ -53,7 +58,7 @@ void startupScreen()
     while (!os_GetCSC());
 }
 
-Methods methodMenu()
+void methodMenu()
 {
     const char* singleStep[] = {
         "Euler",
@@ -79,20 +84,16 @@ Methods methodMenu()
 
     Selected choice = drawMenu(&menuInfo);
 
-    Methods selectedMethod;
     if (choice.SelectedTab == 0)
     {
         switch (choice.SelectedOption)
         {
             case 0:
-                selectedMethod = mEuler;
-                return selectedMethod;
+                euler();
             case 1:
-                selectedMethod = mImpEuler;
-                return selectedMethod;
+                impEuler();
             case 3:
-                selectedMethod = mRK4;
-                return selectedMethod;
+                rk4();
         }
     }
     else if (choice.SelectedTab == 1)
@@ -100,8 +101,7 @@ Methods methodMenu()
         switch (choice.SelectedOption)
         {
             case 0:
-                selectedMethod = mABM;
-                return selectedMethod;
+                abm();
         }
     }
     else if (choice.SelectedTab == 2)
@@ -109,13 +109,9 @@ Methods methodMenu()
         switch (choice.SelectedOption)
         {
             case 0:
-                selectedMethod = mCustomRK;
-                return selectedMethod;
+                break; // TODO
         }
     }
-
-    selectedMethod = mQuit;
-    return selectedMethod;
 }
 
 bool strToNum(uint16_t* str, int len, double* result)

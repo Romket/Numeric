@@ -28,6 +28,7 @@
 int main(void)
 {
     startupScreen();
+
     methodMenu();
     
     return 0;

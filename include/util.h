@@ -33,19 +33,9 @@ extern "C"
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef enum Methods
-{
-    mEuler,
-    mImpEuler,
-    mRK4,
-    mABM,
-    mCustomRK,
-    mQuit
-} Methods;
-
 void startupScreen();
 
-Methods methodMenu();
+void methodMenu();
 
 bool strToNum(uint16_t* str, int len, double* result);
 int strToInt(uint16_t* str, int len);
