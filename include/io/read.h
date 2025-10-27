@@ -40,12 +40,10 @@ typedef struct TargetCursorPos
     unsigned int y;
 } TargetCursorPos;
 
-uint16_t* readString(int* len);
-
 TargetCursorPos getTargetPos(unsigned int lengths[MAX_STRING_LEN], int i);
 
+uint16_t* readString(int* len, char* prompt);
 int readInt();
-
 float readFloat();
 
 #ifdef __cplusplus

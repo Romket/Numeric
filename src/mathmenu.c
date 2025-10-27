@@ -40,7 +40,7 @@ uint16_t mathMenu()
              k_ATanH},
 
         {k_Abs, k_XFactorial},
-        {k_Underscore}
+        {k_Underscore, k_APost}
     };
 
     const char* math[] = {
@@ -61,13 +61,14 @@ uint16_t mathMenu()
     };
 
     const char* var[] = {
-        "_"
+        "_",
+        "'"
     };
 
     Tab tabs[3] = {
         {"MATH", math, 9},
         {"NUM", num, 2},
-        {"VAR", var, 1}
+        {"VAR", var, 2}
     };
 
     Menu menuInfo = {

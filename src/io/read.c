@@ -23,7 +23,6 @@
  * along with Numeric.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "stdbool.h"
 #include <io/read.h>
 
 #include <io/iodefs.h>
@@ -37,8 +36,10 @@
 
 #include <string.h>
 
-uint16_t* readString(int* len)
+uint16_t* readString(int* len, char* prompt)
 {
+    printStr(prompt);
+
     static uint16_t result[MAX_STRING_LEN];
 
     uint16_t key;
@@ -86,6 +87,8 @@ uint16_t* readString(int* len)
 
             os_EnableCursor();
             os_ClrHome();
+
+            printStr(prompt);
 
             char str[SCREEN_WIDTH_CHARS] = {0};
             for (int j = 0; j <= *len; ++j)

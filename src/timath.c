@@ -267,7 +267,7 @@ Expression parseToPostfix(uint16_t* in, int len)
             }
 
             int deriv = 0;
-            while (++i < len && in[i + 1] == k_Quote)
+            while (++i < len && in[i + 1] == k_APost)
             {
                 ++deriv;
             }

@@ -135,9 +135,11 @@ int getKeyStringKey(uint16_t key, char* str)
         case k_I:       strcpy(str, STR(I));          return 1;
         case k_CONSTeA: strcpy(str, STR(E));          return 1;
         
-        case k_Abs: strcpy(str, "abs("); return 4;
+        case k_Abs:   strcpy(str, "abs("); return 4;
+        case k_APost: strcpy(str, "'");    return 1;
 
         case k_Underscore: strcpy(str, "_"); return 1;
+
 
         default: str[0] = '\0'; return -1;
     }

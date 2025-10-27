@@ -58,8 +58,11 @@ typedef struct Equation
 typedef struct DiffEq
 {
     int SystemSize;
-    int* Orders;
-    Equation* Equations;
+    int Orders[MAX_SYSTEM_SIZE];
+    Equation Equations[MAX_SYSTEM_SIZE];
+    Variable Dependent;
+    float Step;
+    float End;
 } DiffEq;
 
 DiffEq getDiffEq(bool* status);

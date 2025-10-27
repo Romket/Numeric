@@ -27,6 +27,7 @@
 
 #include <io/print.h>
 #include <io/read.h>
+#include <io/symbols.h>
 #include <timath.h>
 
 #include <ti/screen.h>
@@ -35,7 +36,7 @@ DiffEq getDiffEq(bool* status)
 {
     os_ClrHome();
     
-    static DiffEq de;
+    DiffEq de;
     *status = true;
 
     printStr("Number of Equations: ");
@@ -73,6 +74,23 @@ DiffEq getDiffEq(bool* status)
         }
     }
 
+    printChar(de.SystemSize == 1 ? 'X' : 'T');
+    printStr("i=");
+    Variable initialXCond = {
+        de.SystemSize == 1 ? 'X' : 'T',
+        -1,
+        0,
+        os_FloatToReal(readFloat())
+    };
+    de.Dependent = initialXCond;
+
+    printChar(de.SystemSize == 1 ? 'X' : 'T');
+    printStr("f=");
+    de.End = readFloat();
+
+    printStr("h=");
+    de.Step = readFloat();
+
     return de;
 }
 
@@ -80,23 +98,33 @@ bool getEquation(DiffEq* de, int eqId, bool system)
 {
     de->Orders[eqId] = readInt();
 
+    char prompt[MAX_STRING_LEN] = {0};
+    int promptID = system ? 2 : 1;
+
+    prompt[0] = system ? 'X' : 'Y';
+    prompt[1] = system ? SUB0 + eqId + 1 : 0;
+
     char varName[3] = {0};
     varName[0] = system ? 'X' : 'Y';
-    varName[1] = system ? '1' + eqId : 0;
+    varName[1] = system ? SUB0 + eqId + 1 : 0;
 
-    printStr(varName);
-    for (int i = 0; i < de->Orders[eqId]; ++i) printChar('\'');
-    printChar('=');
+    for (int i = 0; i < de->Orders[eqId]; ++i)
+    {
+        prompt[promptID] = '\'';
+        ++promptID;
+    }
+    
+    prompt[promptID] = '=';
 
     int len = 0;
-    uint16_t* eqStr = readString(&len);
+    uint16_t* eqStr = readString(&len, prompt);
 
     Expression expr = parseToPostfix(eqStr, len);
     if (len <= 0) return false;
 
     Variable y = {
-        varName[0],
-        system ? '1' + eqId : -1,
+        prompt[0],
+        system ? 1 + eqId : -1,
         de->Orders[eqId],
         {0}
     };
@@ -126,14 +154,14 @@ bool getEquation(DiffEq* de, int eqId, bool system)
     {
         printStr(varName);
         for (int j = 0; j < i; ++j) printChar('\'');
-        printChar('=');
-        Variable initialCond = {
+        printStr("i=");
+        Variable initialYCond = {
             varName[0],
             system ? varName[1] : -1,
             i,
             os_FloatToReal(readFloat())
         };
-        varlist[nvars++] = initialCond;
+        varlist[nvars++] = initialYCond;
     }
 
     Equation eq = {y, varlist, nvars, expr, equal};

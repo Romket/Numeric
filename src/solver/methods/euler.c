@@ -43,5 +43,6 @@ void euler()
         return;
     }
 
-    
+    printStr("aa");
+    while (!os_GetCSC());
 }
