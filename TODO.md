@@ -2,7 +2,8 @@
 ## High Priority
 - [x] Variables
 - [x] Constants
-- [ ] Equations vs. expressions
+- [x] Equations vs. expressions
+- [ ] Evaluate
 
 ## Medium Priority
 - [x] Variable subscripts
