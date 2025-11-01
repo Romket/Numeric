@@ -58,9 +58,10 @@ typedef struct Equation
 typedef struct DiffEq
 {
     int SystemSize;
-    int Orders[MAX_SYSTEM_SIZE];
-    Equation Equations[MAX_SYSTEM_SIZE];
-    Variable Dependent;
+    bool IsSystem;
+    int Orders[MAX_SYSTEM_SIZE * MAX_ORDER];
+    Equation Equations[MAX_SYSTEM_SIZE * MAX_ORDER];
+    Variable Independent;
     float Step;
     float End;
 } DiffEq;
@@ -68,6 +69,10 @@ typedef struct DiffEq
 DiffEq getDiffEq(bool* status);
 
 bool getEquation(DiffEq* de, int eqId, bool system);
+
+void sortVarlist(Variable* vars, int nvars);
+
+void generateFirstOrders(DiffEq* de);
 
 // Returns false if `eq->Relation != equal` or if `eq->Exp` fails to evaluate
 bool evalEq(Equation* eq);

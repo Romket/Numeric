@@ -30,6 +30,7 @@
 #include <io/symbols.h>
 #include <timath.h>
 
+#include <ti/getkey.h>
 #include <ti/screen.h>
 
 DiffEq getDiffEq(bool* status)
@@ -47,6 +48,8 @@ DiffEq getDiffEq(bool* status)
         *status = false;
         return de;
     }
+
+    de.IsSystem = de.SystemSize > 1;
     
     if (de.SystemSize == 1)
     {
@@ -74,15 +77,17 @@ DiffEq getDiffEq(bool* status)
         }
     }
 
-    printChar(de.SystemSize == 1 ? 'X' : 'T');
+    char varName = de.SystemSize == 1 ? 'X' : 'T';
+    printChar(varName);
     printStr("i=");
+    
     Variable initialXCond = {
         de.SystemSize == 1 ? 'X' : 'T',
         -1,
         0,
         os_FloatToReal(readFloat())
     };
-    de.Dependent = initialXCond;
+    de.Independent = initialXCond;
 
     printChar(de.SystemSize == 1 ? 'X' : 'T');
     printStr("f=");
@@ -90,6 +95,8 @@ DiffEq getDiffEq(bool* status)
 
     printStr("h=");
     de.Step = readFloat();
+
+    generateFirstOrders(&de);
 
     return de;
 }
@@ -150,25 +157,110 @@ bool getEquation(DiffEq* de, int eqId, bool system)
         }
     }
 
-    for (int i = 0; i < de->Orders[eqId]; ++i)
+    for (int i = 1; i < de->Orders[eqId]; ++i)
     {
         printStr(varName);
         for (int j = 0; j < i; ++j) printChar('\'');
         printStr("i=");
-        Variable initialYCond = {
-            varName[0],
-            system ? varName[1] : -1,
-            i,
-            os_FloatToReal(readFloat())
-        };
-        varlist[nvars++] = initialYCond;
+
+        bool found = false;
+        for (int j = 0; j < nvars; ++j)
+        {
+            if (varName[0] == varlist[j].Name &&
+                system ? varName[1] : -1 == varlist[j].Subscript &&
+                i == varlist[j].Deriv)
+            {
+                varlist[j].Value = os_FloatToReal(readFloat());
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            Variable initialYCond = {
+                varName[0],
+                system ? varName[1] : -1,
+                i,
+                os_FloatToReal(readFloat())
+            };
+            varlist[nvars++] = initialYCond;
+        }
     }
+
+    sortVarlist(varlist, nvars);
 
     Equation eq = {y, varlist, nvars, expr, equal};
 
     de->Equations[eqId] = eq;
 
     return true;
+}
+
+void sortVarlist(Variable* vars, int nvars)
+{
+    Variable temp;
+    for (int i = 0; i < nvars; ++i)
+    {
+        if (vars[i].Deriv != i)
+        {
+            temp = vars[vars[i].Deriv];
+            vars[vars[i].Deriv] = vars[i];
+            
+            while (temp.Deriv != i)
+            {
+                Variable temp2 = vars[temp.Deriv];
+                vars[temp.Deriv] = temp;
+                temp = temp2;
+            }
+
+            vars[i] = temp;
+        }
+    }
+}
+
+void generateFirstOrders(DiffEq* de)
+{
+    for (int i = 0; i < de->SystemSize; ++i)
+    {
+        if (de->Orders[i] == 1) continue;
+
+        for (int j = de->Orders[i]; j > 1; --j)
+        {
+            Variable varlist[] = {
+                de->IsSystem ? 'X' : 'Y',
+                de->IsSystem ? i + 1 : -1,
+                j - 1,
+                de->Equations[i].VarList[j - 1].Value // Sorting yippee
+            };
+
+            Token tok = {
+                variable,
+                de->IsSystem ? 'X' : 'Y',
+                de->IsSystem ? i + 1 : -1,
+                j - 1,
+                {0},
+                0
+            };
+            Expression exp = {{tok}, 1};
+
+            Equation eq = {
+                {
+                    de->IsSystem ? 'X' : 'Y',
+                    de->IsSystem ? i + 1 : -1,
+                    j,
+                    de->Equations[i].VarList[j - 1].Value
+                },
+                varlist,
+                1,
+                exp,
+                equal
+            };
+
+            de->Orders[++de->SystemSize] = 1;
+            de->Equations[de->SystemSize] = eq;
+        }
+    }
 }
 
 bool evalEq(Equation* eq)

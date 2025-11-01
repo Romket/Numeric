@@ -34,15 +34,25 @@
 void euler()
 {
     bool status = true;
-    DiffEq equation = getDiffEq(&status);
+    DiffEq de = getDiffEq(&status);
     if (!status)
     {
         os_ClrHome();
         printStr("Invalid differential equation entered");
-        while (!os_GetCSC())
+        while (!os_GetCSC());
         return;
     }
 
-    printStr("aa");
-    while (!os_GetCSC());
+    // TODO: handle negative step
+    while (os_RealToFloat(&de.Independent.Value) < de.End)
+    {
+        for (int i = 0; i < de.SystemSize; ++i)
+        {
+            if (!evalEq(&de.Equations[i]))
+            {
+                printStr("Failed to evaluate differential equation");
+                return;
+            }
+        }
+    }
 }
